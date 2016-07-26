@@ -1,0 +1,17 @@
+{
+  "name": "otgs/unit-tests-framework",
+  "description": "A framework to build unit tests",
+  "keywords": [
+    "phpunit"
+  ],
+  "homepage": "https://git.onthegosystems.com/shared/otgs-unit-tests-framework",
+  "type": "library",
+  "license": "GPL-2.0",
+  "authors": [
+    {
+      "name": "Andrea Sciamanna",
+      "email": "andrea.s@icanlocalize.com",
+      "homepage": "http://wpml.org"
+    }
+  ]
+}

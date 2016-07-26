@@ -1,0 +1,12 @@
+{
+  "require-dev": {
+    "10up/wp_mock": "dev-master",
+    "league/factory-muffin": "^3.0",
+    "league/factory-muffin-faker": "^2.0"
+  },
+  "autoload": {
+    "classmap": [
+      "stubs/"
+    ]
+  }
+}

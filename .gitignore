@@ -1,0 +1,21 @@
+# Exclusions
+
+## Directories
+
+__MACOSX
+
+.sass-cache
+
+vendor
+
+## Files
+
+Thumbs.db
+
+# Exceptions
+
+## Directories
+
+## Files
+
+!/composer.json
