@@ -13,5 +13,17 @@
       "email": "andrea.s@icanlocalize.com",
       "homepage": "http://wpml.org"
     }
-  ]
+  ],
+  "require-dev": {
+    "10up/wp_mock": "dev-master",
+    "league/factory-muffin": "^3.0",
+    "league/factory-muffin-faker": "^2.0",
+    "otgs/unit-tests-framework": "dev-master"
+  },
+  "autoload": {
+    "classmap": [
+      "phpunit/otgs-testcase.php"
+    ]
+  }
+
 }

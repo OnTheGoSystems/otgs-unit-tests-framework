@@ -2,11 +2,13 @@
   "require-dev": {
     "10up/wp_mock": "dev-master",
     "league/factory-muffin": "^3.0",
-    "league/factory-muffin-faker": "^2.0"
+    "league/factory-muffin-faker": "^2.0",
+    "otgs/unit-tests-framework": "dev-master"
   },
-  "autoload": {
-    "classmap": [
-      "stubs/"
-    ]
-  }
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "ssh://git@git.onthegosystems.com:10022/shared/otgs-unit-tests-framework.git"
+    }
+  ]
 }

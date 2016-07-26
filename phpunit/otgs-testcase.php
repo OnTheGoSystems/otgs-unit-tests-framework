@@ -4,13 +4,13 @@ use League\FactoryMuffin\FactoryMuffin;
 /**
  * @author OnTheGo Systems
  */
-class OTGS_TestCase extends PHPUnit_Framework_TestCase {
+abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	protected $current_user_id = 0;
 	/**
 	 * @var FactoryMuffin
 	 */
 	protected static $fm;
-	private          $options = array();
+	protected $options = array();
 
 	public static function setupBeforeClass() {
 		// create a new factory muffin instance
@@ -31,6 +31,16 @@ class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 		parent::setUp();
 		\WP_Mock::setUp();
 
+		$this->mock_functions();
+
+	}
+
+	function tearDown() {
+		\WP_Mock::tearDown();
+		parent::tearDown();
+	}
+
+	private function mock_functions() {
 		\WP_Mock::wpFunction( 'esc_html__', array(
 			'args'   => array( '*', '*' ),
 			'return' => function ( $input, $context ) {
@@ -71,7 +81,6 @@ class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 		) );
 
 		\WP_Mock::wpFunction( 'get_option', array(
-			'args'   => array( '*', '*' ),
 			'return' => function ( $option, $default_value = false ) {
 				if ( array_key_exists( $option, $this->options ) ) {
 					return $this->options[ $option ];
@@ -90,14 +99,80 @@ class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 
 		\WP_Mock::wpFunction( 'wp_json_encode', array(
 			'args'   => '*',
-			'return' => function ( $data ) {
-				return json_encode( $data );
+			'return' => function ( $thing ) {
+				return json_encode( $thing );
 			},
 		) );
-	}
 
-	function tearDown() {
-		\WP_Mock::tearDown();
-		parent::tearDown();
+		\WP_Mock::wpFunction( 'is_wp_error', array(
+			'args'   => '*',
+			'return' => function ( $thing ) {
+				return ( $thing instanceof WP_Error );
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'untrailingslashit', array(
+			'args'   => array( '*' ),
+			'return' => function ( $input ) {
+				rtrim( $input, '/\\' );
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'plugins_url', array(
+			'return' => function ( $path = '', $plugin = '' ) {
+				return $path;
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'admin_url', array(
+			'return' => function ( $path = '', $scheme = 'admin' ) {
+				return $path . '/' . $scheme;
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'add_query_arg', array(
+			'return' => function ( $path = '', $scheme = 'admin' ) {
+				$args = func_get_args();
+				if ( is_array( $args[0] ) ) {
+					if ( count( $args ) < 2 || false === $args[1] ) {
+						$uri = $_SERVER['REQUEST_URI'];
+					} else {
+						$uri = $args[1];
+					}
+				} else {
+					if ( count( $args ) < 3 || false === $args[2] ) {
+						$uri = $_SERVER['REQUEST_URI'];
+					} else {
+						$uri = $args[2];
+					}
+				}
+
+				return $uri;
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'get_plugin_data', array(
+			'return' => function ( $plugin_file, $markup = true, $translate = true ) {
+				return array(
+					'Name'        => 'Plugin Name: ' . $plugin_file,
+					'PluginURI'   => 'Plugin URI: ' . $plugin_file,
+					'Version'     => 'Version: ' . $plugin_file,
+					'Description' => 'Description: ' . $plugin_file,
+					'Author'      => 'Author: ' . $plugin_file,
+					'AuthorURI'   => 'Author URI: ' . $plugin_file,
+					'TextDomain'  => 'Text Domain: ' . $plugin_file,
+					'DomainPath'  => 'Domain Path: ' . $plugin_file,
+					'Network'     => 'Network: ' . $plugin_file,
+					// Site Wide Only is deprecated in favor of Network.
+					'_sitewide'   => 'Site Wide Only: ' . $plugin_file,
+				);
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'wp_get_theme', array(
+			'return' => function ( $plugin_file, $markup = true, $translate = true ) {
+				return new WP_Theme( $plugin_file, '' );
+			},
+		) );
 	}
 }
