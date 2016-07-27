@@ -42,35 +42,30 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 
 	private function mock_functions() {
 		\WP_Mock::wpFunction( 'esc_html__', array(
-			'args'   => array( '*', '*' ),
 			'return' => function ( $input, $context ) {
 				return __( $input, $context );
 			},
 		) );
 
 		\WP_Mock::wpFunction( '__', array(
-			'args'   => array( '*', '*' ),
 			'return' => function ( $input, $context ) {
 				return $context . '|||' . $input;
 			},
 		) );
 
 		\WP_Mock::wpFunction( 'esc_attr', array(
-			'args'   => array( '*' ),
 			'return' => function ( $input ) {
 				return $input;
 			},
 		) );
 
 		\WP_Mock::wpFunction( 'esc_url_raw', array(
-			'args'   => array( '*' ),
 			'return' => function ( $input ) {
 				return $input;
 			},
 		) );
 
 		\WP_Mock::wpFunction( 'esc_html', array(
-			'args'   => array( '*' ),
 			'return' => function ( $input ) {
 				return $input;
 			},
@@ -91,28 +86,24 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 		) );
 
 		\WP_Mock::wpFunction( 'update_option', array(
-			'args'   => array( '*', '*', '*' ),
 			'return' => function ( $option, $value, $autoload = null ) {
 				$this->options[ $option ] = $value;
 			},
 		) );
 
 		\WP_Mock::wpFunction( 'wp_json_encode', array(
-			'args'   => '*',
-			'return' => function ( $thing ) {
-				return json_encode( $thing );
+			'return' => function ( $data, $options = 0, $depth = 512 ) {
+				return json_encode( $data, $options, $depth );
 			},
 		) );
 
 		\WP_Mock::wpFunction( 'is_wp_error', array(
-			'args'   => '*',
 			'return' => function ( $thing ) {
 				return ( $thing instanceof WP_Error );
 			},
 		) );
 
 		\WP_Mock::wpFunction( 'untrailingslashit', array(
-			'args'   => array( '*' ),
 			'return' => function ( $input ) {
 				rtrim( $input, '/\\' );
 			},
@@ -163,8 +154,6 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 					'TextDomain'  => 'Text Domain: ' . $plugin_file,
 					'DomainPath'  => 'Domain Path: ' . $plugin_file,
 					'Network'     => 'Network: ' . $plugin_file,
-					// Site Wide Only is deprecated in favor of Network.
-					'_sitewide'   => 'Site Wide Only: ' . $plugin_file,
 				);
 			},
 		) );
