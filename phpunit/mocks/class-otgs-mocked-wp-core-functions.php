@@ -95,6 +95,14 @@ class OTGS_Mocked_WP_Core_Functions {
 				rtrim( $input, '/\\' );
 			},
 		) );
+
+		\WP_Mock::wpFunction( 'sanitize_text_field', array(
+			'return' => function ( $input ) {
+				return $input;
+			},
+		) );
+
+
 	}
 
 	public function user_functions() {
@@ -114,6 +122,43 @@ class OTGS_Mocked_WP_Core_Functions {
 		\WP_Mock::wpFunction( 'wp_get_current_user', array(
 			'return' => function () {
 				return $this->current_user;
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'wp_send_json_success', array(
+			'return' => function ( $data = null ) {
+				$response = array( 'success' => true );
+
+				if ( isset( $data ) ) {
+					$response['data'] = $data;
+				}
+
+				return $response;
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'wp_send_json_error', array(
+			'return' => function ( $data = null ) {
+				$response = array( 'success' => false );
+
+				if ( isset( $data ) ) {
+					if ( is_wp_error( $data ) ) {
+						/** @var WP_Error $data */
+						$result = array();
+						foreach ( $data->errors as $code => $messages ) {
+							/** @var array $messages */
+							foreach ( $messages as $message ) {
+								$result[] = array( 'code' => $code, 'message' => $message );
+							}
+						}
+
+						$response['data'] = $result;
+					} else {
+						$response['data'] = $data;
+					}
+				}
+
+				return $response;
 			},
 		) );
 	}
