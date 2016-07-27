@@ -5,12 +5,12 @@ use League\FactoryMuffin\FactoryMuffin;
  * @author OnTheGo Systems
  */
 abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
-	protected $current_user_id = 0;
 	/**
 	 * @var FactoryMuffin
 	 */
 	protected static $fm;
-	protected $options = array();
+
+	protected $mocked_wp_core_functions;
 
 	public static function setupBeforeClass() {
 		// create a new factory muffin instance
@@ -37,8 +37,16 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 		parent::tearDown();
 	}
 
-	protected function mock_core_functions() {
-		$functions = new OTGS_Mocked_WP_Core_Functions();
+	protected function get_mocked_wp_core_functions() {
+		if ( ! $this->mocked_wp_core_functions ) {
+			$this->mocked_wp_core_functions = new OTGS_Mocked_WP_Core_Functions();
+		}
+
+		return $this->mocked_wp_core_functions;
+	}
+
+	protected function mock_all_core_functions() {
+		$functions = $this->get_mocked_wp_core_functions();
 		$functions->wp_error();
 		$functions->link_template();
 		$functions->plugin();

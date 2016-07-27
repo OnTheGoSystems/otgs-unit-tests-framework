@@ -4,6 +4,10 @@
  * @author OnTheGo Systems
  */
 class OTGS_Mocked_WP_Core_Functions {
+	private $options         = array();
+	private $current_user_id = 0;
+	private $current_user;
+
 	public function functions() {
 		\WP_Mock::wpFunction( 'wp_json_encode', array(
 			'return' => function ( $data, $options = 0, $depth = 512 ) {
@@ -96,6 +100,21 @@ class OTGS_Mocked_WP_Core_Functions {
 	public function user_functions() {
 		\WP_Mock::wpFunction( 'get_current_user_id', array(
 			'return' => $this->current_user_id,
+		) );
+
+		\WP_Mock::wpFunction( 'wp_set_current_user', array(
+			'return' => function ( $id, $name = '' ) {
+				$this->current_user_id = $id;
+				if ( $id ) {
+					$this->current_user = new WP_User( $id, $name );
+				}
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'wp_get_current_user', array(
+			'return' => function () {
+				return $this->current_user;
+			},
 		) );
 	}
 
