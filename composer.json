@@ -22,7 +22,8 @@
   },
   "autoload": {
     "classmap": [
-      "phpunit/otgs-testcase.php"
+      "phpunit/otgs-testcase.php",
+      "phpunit/stubs"
     ]
   }
 
