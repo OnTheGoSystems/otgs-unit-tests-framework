@@ -13,6 +13,8 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	protected $mocked_wp_core_functions;
 
 	public static function setupBeforeClass() {
+		unset( $_POST, $_GET, $_REQUEST, $GLOBALS );
+
 		// create a new factory muffin instance
 		static::$fm = new FactoryMuffin();
 
