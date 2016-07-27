@@ -13,3 +13,10 @@
   - Write your tests there
   - Unless you have customized the `phpunit.xml` file, you don't need to name the test files and classes in any particular way
 - From `tests/phpunit` run `phpunit` to start your tests
+
+## Resources
+
+* Start from here for a general explanation: http://wordpress.stackexchange.com/a/164138/7291
+* `WP_Mock`: https://github.com/10up/wp_mock
+* Mockery: https://github.com/padraic/mockery
+* Factory Muffin: https://github.com/thephpleague/factory-muffin
