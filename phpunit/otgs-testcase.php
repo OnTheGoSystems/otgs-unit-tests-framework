@@ -15,7 +15,6 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	public static function setupBeforeClass() {
 		$_GET    = array();
 		$_POST   = array();
-		$GLOBALS = array();
 
 		// create a new factory muffin instance
 		static::$fm = new FactoryMuffin();
