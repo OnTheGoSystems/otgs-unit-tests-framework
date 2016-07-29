@@ -193,11 +193,11 @@ class OTGS_Mocked_WP_Core_Functions {
 					$meta_cache = $that->meta_cache[ $meta_type ];
 				}
 
-				if ( isset( $meta_cache[ $meta_key ] ) ) {
+				if ( isset( $meta_cache[ $object_id ][ $meta_key ] ) ) {
 					if ( $single ) {
-						return maybe_unserialize( $meta_cache[ $meta_key ][0] );
+						return maybe_unserialize( $meta_cache[ $object_id ][ $meta_key ][0] );
 					} else {
-						return array_map( 'maybe_unserialize', $meta_cache[ $meta_key ] );
+						return array_map( 'maybe_unserialize', $meta_cache[ $object_id ][ $meta_key ] );
 					}
 				}
 
@@ -220,7 +220,7 @@ class OTGS_Mocked_WP_Core_Functions {
 				}
 				$meta_value = maybe_serialize( $meta_value );
 
-				$that->meta_cache[ $meta_type ][ $meta_key ] = $meta_value;
+				$that->meta_cache[ $meta_type ][ $object_id ][ $meta_key ] = $meta_value;
 
 				return true;
 			},
