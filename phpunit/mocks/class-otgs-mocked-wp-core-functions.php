@@ -220,7 +220,7 @@ class OTGS_Mocked_WP_Core_Functions {
 				}
 				$meta_value = maybe_serialize( $meta_value );
 
-				$that->meta_cache[ $meta_type ][ $object_id ][ $meta_key ] = $meta_value;
+				$that->meta_cache[ $meta_type ][ $object_id ][ $meta_key ][] = $meta_value;
 
 				return true;
 			},
