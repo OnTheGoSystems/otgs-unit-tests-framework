@@ -393,6 +393,14 @@ class OTGS_Mocked_WP_Core_Functions {
 				return $path . '/' . $scheme;
 			},
 		) );
+
+		\WP_Mock::wpFunction( 'get_permalink', array(
+			'return' => function ( $id = 0, $leavename = false ) {
+				$post = get_post( $id );
+
+				return WPML_TESTS_SITE_URL . '/' . $post->post_title;
+			},
+		) );
 	}
 
 	public function plugin() {
