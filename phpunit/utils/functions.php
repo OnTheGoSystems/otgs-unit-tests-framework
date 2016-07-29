@@ -4,6 +4,59 @@
  */
 // misc help functions and utilities
 
+/**
+ * Passing to that function an array of arrays, it will build another array with all possible combination of values.
+ * This function might be useful when providing data to a test.
+ *
+ * # Example:
+ *
+ * $args[] = array( true, false );
+ * $args[] = array( 5, 10 );
+ * $args[] = array( 'foo', 'bar' );
+ *
+ * $result = combine( $args );
+ *
+ * # Result:
+ *
+ * array(
+ *    array( true, 5, 'foo' ),
+ *    array( true, 5, 'bar' ),
+ *    array( true, 10, 'foo' ),
+ *    array( true, 10, 'bar' ),
+ *    array( false, 5, 'foo' ),
+ *    array( false, 5, 'bar' ),
+ *    array( false, 10, 'foo' ),
+ *    array( false, 10, 'bar' )
+ * );
+ *
+ * @param array $arrays
+ * @param int   $i
+ *
+ * @return array
+ */
+function combinations( $arrays, $i = 0 ) {
+	if ( ! array_key_exists( $i, $arrays ) ) {
+		return array();
+	}
+	if ( ( count( $arrays ) - 1 ) === $i ) {
+		return $arrays[ $i ];
+	}
+
+	// get combinations from subsequent arrays
+	$tmp = combinations( $arrays, $i + 1 );
+
+	$result = array();
+
+	// concat each array from tmp with each element from $arrays[$i]
+	foreach ( $arrays[ $i ] as $v ) {
+		foreach ( $tmp as $t ) {
+			$result[] = is_array( $t ) ? array_merge( array( $v ), $t ) : array( $v, $t );
+		}
+	}
+
+	return $result;
+}
+
 function rand_str( $len = 32 ) {
 	return substr( md5( uniqid( mt_rand(), true ) ), 0, $len );
 }
