@@ -4,10 +4,10 @@
  * @author OnTheGo Systems
  */
 class OTGS_Mocked_WP_Core_Functions {
-	private $posts           = array();
-	private $options         = array();
-	private $current_user_id = 0;
-	private $current_user;
+	public $posts           = array();
+	public $options         = array();
+	public $current_user_id = 0;
+	public $current_user;
 
 	public function functions() {
 		\WP_Mock::wpFunction( 'wp_json_encode', array(
