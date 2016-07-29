@@ -4,6 +4,7 @@
  * @author OnTheGo Systems
  */
 class OTGS_Mocked_WP_Core_Functions {
+	private $posts           = array();
 	private $options         = array();
 	private $current_user_id = 0;
 	private $current_user;
@@ -33,6 +34,106 @@ class OTGS_Mocked_WP_Core_Functions {
 				}
 
 				return $uri;
+			},
+		) );
+	}
+
+	public function post_functions() {
+		$that = $this;
+		\WP_Mock::wpFunction( 'get_post', array(
+			'return' => /**
+			 * @param int|array|stdClass|null $post
+			 * @param string                  $output
+			 * @param string                  $filter
+			 *
+			 * @return array|mixed|null|stdClass
+			 */
+				function ( $post = null, $output = OBJECT, $filter = 'raw' ) use ( $that ) {
+					if ( ! $post && array_key_exists( 'post', $GLOBALS ) ) {
+						$post = $GLOBALS['post'];
+					}
+
+					$_post = null;
+
+					$post_id = null;
+					if ( is_object( $post ) && isset( $post->ID ) ) {
+						$post_id = $post->ID;
+					} elseif ( $post && is_array( $post ) ) {
+						$_post = new stdClass();
+						/**
+						 * @var array $post
+						 */
+						foreach ( $post as $key => $value ) {
+							// Add the value to the object
+							if ( in_array( $key, array( 'id', 'ID', 'post_id' ), true ) ) {
+								$_post->ID = $value;
+							} else {
+								$_post->{$key} = $value;
+							}
+						}
+						$post_id = $post->ID;
+					} else {
+						$post_id = $post;
+					}
+
+					if ( array_key_exists( $post_id, $that->posts ) ) {
+						$_post = $that->posts[ $post_id ];
+					}
+
+					if ( ! $_post ) {
+						return null;
+					}
+
+					if ( ARRAY_A === $output ) {
+						return get_object_vars( $_post );
+					} elseif ( ARRAY_N === $output ) {
+						return array_values( get_object_vars( $_post ) );
+					}
+
+					return $_post;
+				},
+		) );
+
+		\WP_Mock::wpFunction( 'wp_insert_post', array(
+			'return' => function ( $postarr, $wp_error = false ) use ( $that ) {
+
+				if ( ! empty( $postarr['ID'] ) ) {
+					$post_ID     = $postarr['ID'];
+					$post_before = get_post( $post_ID );
+					if ( is_null( $post_before ) ) {
+						if ( $wp_error ) {
+							$error                           = new stdClass();
+							$error->errors['invalid_post'][] = 'Invalid post ID.';
+
+							return $error;
+						}
+
+						return 0;
+					}
+				}
+
+				$_post = new stdClass();
+				foreach ( $postarr as $key => $value ) {
+					// Add the value to the object
+					if ( in_array( $key, array( 'id', 'ID', 'post_id' ), true ) ) {
+						$_post->ID = $value;
+					} else {
+						$_post->{$key} = $value;
+					}
+				}
+
+				if ( ! isset( $_post->ID ) || ! $_post->ID ) {
+					$new_id = 1;
+					if ( $that->posts ) {
+						$ids    = array_keys( $that->posts );
+						$new_id = max( $ids ) + 1;
+					}
+					$_post->ID = $new_id;
+				}
+
+				$that->posts[ $_post->ID ] = $_post;
+
+				return $_post->ID;
 			},
 		) );
 	}
@@ -101,27 +202,27 @@ class OTGS_Mocked_WP_Core_Functions {
 				return $input;
 			},
 		) );
-
-
 	}
 
 	public function user_functions() {
+		$that = $this;
+
 		\WP_Mock::wpFunction( 'get_current_user_id', array(
 			'return' => $this->current_user_id,
 		) );
 
 		\WP_Mock::wpFunction( 'wp_set_current_user', array(
-			'return' => function ( $id, $name = '' ) {
-				$this->current_user_id = $id;
+			'return' => function ( $id, $name = '' ) use ( $that ) {
+				$that->current_user_id = $id;
 				if ( $id ) {
-					$this->current_user = new WP_User( $id, $name );
+					$that->current_user = new WP_User( $id, $name );
 				}
 			},
 		) );
 
 		\WP_Mock::wpFunction( 'wp_get_current_user', array(
-			'return' => function () {
-				return $this->current_user;
+			'return' => function () use ( $that ) {
+				return $that->current_user;
 			},
 		) );
 
@@ -164,10 +265,12 @@ class OTGS_Mocked_WP_Core_Functions {
 	}
 
 	public function option_functions() {
+		$that = $this;
+
 		\WP_Mock::wpFunction( 'get_option', array(
-			'return' => function ( $option, $default_value = false ) {
-				if ( array_key_exists( $option, $this->options ) ) {
-					return $this->options[ $option ];
+			'return' => function ( $option, $default_value = false ) use ( $that ) {
+				if ( array_key_exists( $option, $that->options ) ) {
+					return $that->options[ $option ];
 				} else {
 					return $default_value;
 				}
@@ -175,8 +278,8 @@ class OTGS_Mocked_WP_Core_Functions {
 		) );
 
 		\WP_Mock::wpFunction( 'update_option', array(
-			'return' => function ( $option, $value, $autoload = null ) {
-				$this->options[ $option ] = $value;
+			'return' => function ( $option, $value, $autoload = null ) use ( $that ) {
+				$that->options[ $option ] = $value;
 			},
 		) );
 	}
