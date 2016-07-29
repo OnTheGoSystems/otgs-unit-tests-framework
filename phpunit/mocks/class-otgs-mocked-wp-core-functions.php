@@ -175,6 +175,8 @@ class OTGS_Mocked_WP_Core_Functions {
 	}
 
 	public function meta_functions() {
+		$that = $this;
+
 		\WP_Mock::wpFunction( 'get_metadata', array(
 			'return' => function ( $meta_type, $object_id, $meta_key = '', $single = false ) use ( $that ) {
 				if ( ! $meta_type || ! is_numeric( $object_id ) ) {

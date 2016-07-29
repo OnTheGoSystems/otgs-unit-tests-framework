@@ -57,6 +57,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 		$functions->functions();
 		$functions->wp_error();
 		$functions->post_functions();
+		$functions->meta_functions();
 		$functions->link_template();
 		$functions->plugin();
 		$functions->theme();
