@@ -5,6 +5,7 @@
  */
 class OTGS_Mocked_WP_Core_Functions {
 	public $posts           = array();
+	public $meta_cache      = array();
 	public $options         = array();
 	public $current_user_id = 0;
 	public $current_user;
@@ -34,6 +35,30 @@ class OTGS_Mocked_WP_Core_Functions {
 				}
 
 				return $uri;
+			},
+		) );
+		\WP_Mock::wpFunction( 'maybe_unserialize', array(
+			'return' => function ( $original ) {
+				$unserialized = @unserialize( $original );
+				if ( $unserialized ) {
+					return $unserialized;
+				}
+
+				return $original;
+			},
+		) );
+		\WP_Mock::wpFunction( 'maybe_serialize', array(
+			'return' => function ( $data ) {
+				if ( is_array( $data ) || is_object( $data ) ) {
+					return serialize( $data );
+				}
+
+				return $data;
+			},
+		) );
+		\WP_Mock::wpFunction( 'absint', array(
+			'return' => function ( $maybeint ) {
+				return abs( (int) $maybeint );
 			},
 		) );
 	}
@@ -134,6 +159,68 @@ class OTGS_Mocked_WP_Core_Functions {
 				$that->posts[ $_post->ID ] = $_post;
 
 				return $_post->ID;
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'get_post_meta', array(
+			'return' => function ( $post_id, $key = '', $single = false ) {
+				return get_metadata( 'post', $post_id, $key, $single );
+			},
+		) );
+		\WP_Mock::wpFunction( 'update_post_meta', array(
+			'return' => function ( $post_id, $meta_key, $meta_value, $prev_value = '' ) {
+				return update_metadata( 'post', $post_id, $meta_key, $meta_value, $prev_value );
+			},
+		) );
+	}
+
+	public function meta_functions() {
+		\WP_Mock::wpFunction( 'get_metadata', array(
+			'return' => function ( $meta_type, $object_id, $meta_key = '', $single = false ) use ( $that ) {
+				if ( ! $meta_type || ! is_numeric( $object_id ) ) {
+					return false;
+				}
+
+				$object_id = absint( $object_id );
+				if ( ! $object_id ) {
+					return false;
+				}
+
+				$meta_cache = null;
+				if ( array_key_exists( $meta_type, $that->meta_cache ) ) {
+					$meta_cache = $that->meta_cache[ $meta_type ];
+				}
+
+				if ( isset( $meta_cache[ $meta_key ] ) ) {
+					if ( $single ) {
+						return maybe_unserialize( $meta_cache[ $meta_key ][0] );
+					} else {
+						return array_map( 'maybe_unserialize', $meta_cache[ $meta_key ] );
+					}
+				}
+
+				if ( $single ) {
+					return '';
+				} else {
+					return array();
+				}
+			},
+		) );
+		\WP_Mock::wpFunction( 'update_metadata', array(
+			'return' => function ( $meta_type, $object_id, $meta_key, $meta_value, $prev_value = '' ) use ( $that ) {
+				if ( ! $meta_type || ! $meta_key || ! is_numeric( $object_id ) ) {
+					return false;
+				}
+
+				$object_id = absint( $object_id );
+				if ( ! $object_id ) {
+					return false;
+				}
+				$meta_value = maybe_serialize( $meta_value );
+
+				$that->meta_cache[ $meta_type ][ $meta_key ] = $meta_value;
+
+				return true;
 			},
 		) );
 	}
