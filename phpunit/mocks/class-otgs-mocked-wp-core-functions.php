@@ -4,13 +4,14 @@
  * @author OnTheGo Systems
  */
 class OTGS_Mocked_WP_Core_Functions {
-	public $posts           = array();
-	public $meta_cache      = array();
-	public $options         = array();
-	public $wp_filter       = array();
-	public $merged_filters  = array();
-	public $current_user_id = 0;
-	public $current_user;
+	public    $posts           = array();
+	public    $meta_cache      = array();
+	public    $options         = array();
+	public    $wp_filter       = array();
+	public    $merged_filters  = array();
+	public    $current_user_id = 0;
+	public    $current_user;
+	protected $filter_id_count = 0;
 
 	public function functions() {
 		\WP_Mock::wpFunction( 'wp_json_encode', array(
@@ -284,6 +285,49 @@ class OTGS_Mocked_WP_Core_Functions {
 				}
 
 				return $r;
+			},
+		) );
+
+		\WP_Mock::wpFunction( '_wp_filter_build_unique_id', array(
+			'return' => function ( $tag, $function, $priority ) use ( $that ) {
+				if ( is_string( $function ) ) {
+					return $function;
+				}
+
+				$unique_id = null;
+
+				if ( is_object( $function ) ) {
+					// Closures are currently implemented as objects
+					$function = array( $function, '' );
+				} else {
+					$function = (array) $function;
+				}
+
+				if ( is_object( $function[0] ) ) {
+					// Object Class Calling
+					if ( function_exists( 'spl_object_hash' ) ) {
+						$unique_id = spl_object_hash( $function[0] ) . $function[1];
+					} else {
+						$obj_idx = get_class( $function[0] ) . $function[1];
+						if ( ! isset( $function[0]->wp_filter_id ) ) {
+							if ( false === $priority ) {
+								return false;
+							}
+							$obj_idx .= isset( $wp_filter[ $tag ][ $priority ] ) ? count( (array) $wp_filter[ $tag ][ $priority ] ) : $that->filter_id_count;
+							$function[0]->wp_filter_id = $that->filter_id_count;
+							++ $that->filter_id_count;
+						} else {
+							$obj_idx .= $function[0]->wp_filter_id;
+						}
+
+						$unique_id = $obj_idx;
+					}
+				} elseif ( is_string( $function[0] ) ) {
+					// Static Calling
+					$unique_id = $function[0] . '::' . $function[1];
+				}
+
+				return $unique_id;
 			},
 		) );
 	}
