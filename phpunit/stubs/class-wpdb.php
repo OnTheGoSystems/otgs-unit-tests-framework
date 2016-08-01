@@ -37,5 +37,5 @@ class wpdb {
 	public $is_mysql = null;
 
 	function get_results(){}
-	function propare(){}
+	function prepare(){}
 }
