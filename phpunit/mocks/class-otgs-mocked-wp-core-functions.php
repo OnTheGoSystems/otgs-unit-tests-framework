@@ -5,6 +5,8 @@
  */
 class OTGS_Mocked_WP_Core_Functions {
 	public    $posts           = array();
+	public    $terms           = array();
+	public    $term_taxonomy   = array();
 	public    $meta_cache      = array();
 	public    $options         = array();
 	public    $wp_filter       = array();
@@ -173,6 +175,78 @@ class OTGS_Mocked_WP_Core_Functions {
 		\WP_Mock::wpFunction( 'update_post_meta', array(
 			'return' => function ( $post_id, $meta_key, $meta_value, $prev_value = '' ) {
 				return update_metadata( 'post', $post_id, $meta_key, $meta_value, $prev_value );
+			},
+		) );
+	}
+
+	public function taxonomy_functions() {
+		$that = $this;
+		\WP_Mock::wpFunction( 'get_term', array(
+			'return' => function ( $term, $taxonomy = '', $output = OBJECT, $filter = 'raw' ) use ( $that ) {
+				$_term_id = null;
+
+				if ( $term ) {
+					if ( is_numeric( $term ) ) {
+						$_term_id = $term;
+					}
+					if ( is_object( $term ) ) {
+						$_term_id = $term->term_id;
+					}
+				}
+
+				if ( ! $_term_id ) {
+					return null;
+				}
+
+				$_term = null;
+				if ( array_key_exists( $_term_id, $that->terms ) ) {
+					$_term = $that->terms[ $_term_id ];
+				}
+
+				if ( ARRAY_A === $output ) {
+					return get_object_vars( $_term );
+				} elseif ( ARRAY_N === $output ) {
+					return array_values( get_object_vars( $_term->to_array() ) );
+				}
+
+				return $_term;
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'wp_insert_term', array(
+			'return' => function ( $term, $taxonomy, $args = array() ) use ( $that ) {
+				$defaults = array( 'alias_of' => '', 'description' => '', 'parent' => 0, 'slug' => '', 'term_group' => null );
+
+				$args = array_merge( $defaults, $args );
+
+				$args['name']        = $term;
+				$args['taxonomy']    = $taxonomy;
+				$args['description'] = (string) $args['description'];
+
+				$new_term_id          = count( $that->terms ) + 1;
+				$new_term             = new stdClass();
+				$new_term->term_id    = $new_term_id;
+				$new_term->name       = $args['name'];
+				$new_term->slug       = $args['slug'];
+				$new_term->term_group = $args['term_group'];
+
+				$that->terms[ $new_term_id ] = $new_term;
+
+				if ( ! array_key_exists( $taxonomy, $that->term_taxonomy ) ) {
+					$that->term_taxonomy[ $taxonomy ] = array();
+				}
+
+				$new_term_taxonomy_id = count( $that->term_taxonomy[ $taxonomy ] ) + 1;
+
+				$term_taxonomy              = new stdClass();
+				$term_taxonomy->term_id     = $new_term_id;
+				$term_taxonomy->taxonomy    = $taxonomy;
+				$term_taxonomy->description = $args['description'];
+				$term_taxonomy->parent      = (int) $args['parent'];
+
+				$that->term_taxonomy[ $taxonomy ][ $new_term_id ] = $term_taxonomy;
+
+				return array( $new_term_id, $new_term_taxonomy_id );
 			},
 		) );
 	}
