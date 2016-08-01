@@ -7,6 +7,8 @@ class OTGS_Mocked_WP_Core_Functions {
 	public $posts           = array();
 	public $meta_cache      = array();
 	public $options         = array();
+	public $wp_filter       = array();
+	public $merged_filters  = array();
 	public $current_user_id = 0;
 	public $current_user;
 
@@ -228,6 +230,8 @@ class OTGS_Mocked_WP_Core_Functions {
 	}
 
 	public function plugins_functions() {
+		$that = $this;
+
 		\WP_Mock::wpFunction( 'plugin_dir_url', array(
 			'return' => function ( $input ) {
 				return trailingslashit( plugins_url( '', $input ) );
@@ -237,6 +241,49 @@ class OTGS_Mocked_WP_Core_Functions {
 		\WP_Mock::wpFunction( 'plugins_url', array(
 			'return' => function ( $path = '', $plugin = '' ) {
 				return WP_PLUGIN_URL;
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'add_action', array(
+			'return' => function ( $tag, $function_to_add, $priority = 10, $accepted_args = 1 ) {
+				return add_filter( $tag, $function_to_add, $priority, $accepted_args );
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'add_filter', array(
+			'return' => function ( $tag, $function_to_add, $priority = 10, $accepted_args = 1 ) use ( $that ) {
+				$idx                                          = _wp_filter_build_unique_id( $tag, $function_to_add, $priority );
+				$that->wp_filter[ $tag ][ $priority ][ $idx ] = array( 'function' => $function_to_add, 'accepted_args' => $accepted_args );
+				unset( $that->merged_filters[ $tag ] );
+
+				return true;
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'remove_action', array(
+			'return' => function ( $tag, $function_to_remove, $priority = 10 ) {
+				return remove_filter( $tag, $function_to_remove, $priority );
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'remove_filter', array(
+			'return' => function ( $tag, $function_to_remove, $priority = 10 ) use ( $that ) {
+				$function_to_remove = _wp_filter_build_unique_id( $tag, $function_to_remove, $priority );
+
+				$r = isset( $that->wp_filter[ $tag ][ $priority ][ $function_to_remove ] );
+
+				if ( true === $r ) {
+					unset( $that->wp_filter[ $tag ][ $priority ][ $function_to_remove ] );
+					if ( empty( $that->wp_filter[ $tag ][ $priority ] ) ) {
+						unset( $that->wp_filter[ $tag ][ $priority ] );
+					}
+					if ( empty( $that->wp_filter[ $tag ] ) ) {
+						$that->wp_filter[ $tag ] = array();
+					}
+					unset( $that->merged_filters[ $tag ] );
+				}
+
+				return $r;
 			},
 		) );
 	}
