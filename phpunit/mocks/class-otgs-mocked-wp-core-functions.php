@@ -11,6 +11,7 @@ class OTGS_Mocked_WP_Core_Functions {
 	public    $options         = array();
 	public    $wp_filter       = array();
 	public    $merged_filters  = array();
+	public    $cache           = array();
 	public    $current_user_id = 0;
 	public    $current_user;
 	protected $filter_id_count = 0;
@@ -230,8 +231,6 @@ class OTGS_Mocked_WP_Core_Functions {
 				$new_term->slug       = $args['slug'];
 				$new_term->term_group = $args['term_group'];
 
-				$that->terms[ $new_term_id ] = $new_term;
-
 				if ( ! array_key_exists( $taxonomy, $that->term_taxonomy ) ) {
 					$that->term_taxonomy[ $taxonomy ] = array();
 				}
@@ -244,7 +243,11 @@ class OTGS_Mocked_WP_Core_Functions {
 				$term_taxonomy->description = $args['description'];
 				$term_taxonomy->parent      = (int) $args['parent'];
 
-				$that->term_taxonomy[ $taxonomy ][ $new_term_id ] = $term_taxonomy;
+				$that->term_taxonomy[ $taxonomy ][ $new_term_taxonomy_id ] = $term_taxonomy;
+
+				$new_term->term_taxonomy_id  = $new_term_taxonomy_id;
+				$new_term->taxonomy          = $taxonomy;
+				$that->terms[ $new_term_id ] = $new_term;
 
 				return array( $new_term_id, $new_term_taxonomy_id );
 			},

@@ -10,6 +10,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	 */
 	protected static $fm;
 
+	/** @var OTGS_Mocked_WP_Core_Functions */
 	protected $mocked_wp_core_functions;
 
 	public static function setupBeforeClass() {
@@ -57,6 +58,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 		$functions->functions();
 		$functions->wp_error();
 		$functions->post_functions();
+		$functions->taxonomy_functions();
 		$functions->meta_functions();
 		$functions->link_template();
 		$functions->plugin();
