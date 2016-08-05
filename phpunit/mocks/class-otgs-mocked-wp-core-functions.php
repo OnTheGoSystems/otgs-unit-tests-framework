@@ -67,6 +67,12 @@ class OTGS_Mocked_WP_Core_Functions {
 				return abs( (int) $maybeint );
 			},
 		) );
+
+		\WP_Mock::wpFunction( 'is_attachment', array(
+			'return' => function() {
+				return isset( $_SERVER['is_attachment'] ) ? (bool) $_SERVER['is_attachment'] : false;
+			},
+		) );
 	}
 
 	public function post_functions() {
