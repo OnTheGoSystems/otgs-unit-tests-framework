@@ -67,12 +67,6 @@ class OTGS_Mocked_WP_Core_Functions {
 				return abs( (int) $maybeint );
 			},
 		) );
-
-		\WP_Mock::wpFunction( 'is_attachment', array(
-			'return' => function() {
-				return isset( $_SERVER['is_attachment'] ) ? (bool) $_SERVER['is_attachment'] : false;
-			},
-		) );
 	}
 
 	public function post_functions() {
@@ -599,6 +593,14 @@ class OTGS_Mocked_WP_Core_Functions {
 		\WP_Mock::wpFunction( 'wp_get_theme', array(
 			'return' => function ( $plugin_file, $markup = true, $translate = true ) {
 				return new WP_Theme( $plugin_file, '' );
+			},
+		) );
+	}
+
+	public function query_functions() {
+		\WP_Mock::wpFunction( 'is_attachment', array(
+			'return' => function() {
+				return isset( $_SERVER['is_attachment'] ) ? (bool) $_SERVER['is_attachment'] : false;
 			},
 		) );
 	}

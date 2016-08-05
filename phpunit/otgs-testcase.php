@@ -68,6 +68,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 		$functions->formatting_functions();
 		$functions->user_functions();
 		$functions->option_functions();
+		$functions->query_functions();
 	}
 }
 
