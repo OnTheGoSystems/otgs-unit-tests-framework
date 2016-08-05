@@ -597,7 +597,7 @@ class OTGS_Mocked_WP_Core_Functions {
 		) );
 	}
 
-	public function query_functions() {
+	public function query() {
 		\WP_Mock::wpFunction( 'is_attachment', array(
 			'return' => function() {
 				return isset( $_SERVER['is_attachment'] ) ? (bool) $_SERVER['is_attachment'] : false;
