@@ -465,7 +465,9 @@ class OTGS_Mocked_WP_Core_Functions {
 		$that = $this;
 
 		\WP_Mock::wpFunction( 'get_current_user_id', array(
-			'return' => $this->current_user_id,
+			'return' => function () use ( $that ) {
+				return $that->current_user_id;
+			},
 		) );
 
 		\WP_Mock::wpFunction( 'wp_set_current_user', array(
