@@ -450,7 +450,7 @@ class OTGS_Mocked_WP_Core_Functions {
 
 		\WP_Mock::wpFunction( 'untrailingslashit', array(
 			'return' => function ( $input ) {
-				rtrim( $input, '/\\' );
+				return rtrim( $input, '/\\' );
 			},
 		) );
 
