@@ -24,7 +24,7 @@ class OTGS_Mocked_WP_Core_Functions {
 		) );
 
 		\WP_Mock::wpFunction( 'add_query_arg', array(
-			'return' => function ( $path = '', $scheme = 'admin' ) {
+			'return' => function () {
 				$args = func_get_args();
 				if ( is_array( $args[0] ) ) {
 					if ( count( $args ) < 2 || false === $args[1] ) {
@@ -40,7 +40,56 @@ class OTGS_Mocked_WP_Core_Functions {
 					}
 				}
 
-				return $uri;
+				if ( $frag = strstr( $uri, '#' ) ) {
+					$uri = substr( $uri, 0, - strlen( $frag ) );
+				} else {
+					$frag = '';
+				}
+
+				if ( 0 === stripos( $uri, 'http://' ) ) {
+					$protocol = 'http://';
+					$uri      = substr( $uri, 7 );
+				} elseif ( 0 === stripos( $uri, 'https://' ) ) {
+					$protocol = 'https://';
+					$uri      = substr( $uri, 8 );
+				} else {
+					$protocol = '';
+				}
+
+				if ( strpos( $uri, '?' ) !== false ) {
+					list( $base, $query ) = explode( '?', $uri, 2 );
+					$base .= '?';
+				} elseif ( $protocol || strpos( $uri, '=' ) === false ) {
+					$base  = $uri . '?';
+					$query = '';
+				} else {
+					$base  = '';
+					$query = $uri;
+				}
+
+				parse_str( $query, $qs );
+
+				if ( is_array( $args[0] ) ) {
+					foreach ( $args[0] as $k => $v ) {
+						$qs[ $k ] = $v;
+					}
+				} else {
+					$qs[ $args[0] ] = $args[1];
+				}
+
+				foreach ( $qs as $k => $v ) {
+					if ( $v === false ) {
+						unset( $qs[ $k ] );
+					}
+				}
+
+				$ret = http_build_query( $qs );
+				$ret = trim( $ret, '?' );
+				$ret = preg_replace( '#=(&|$)#', '$1', $ret );
+				$ret = $protocol . $base . $ret . $frag;
+				$ret = rtrim( $ret, '?' );
+
+				return $ret;
 			},
 		) );
 		\WP_Mock::wpFunction( 'maybe_unserialize', array(
