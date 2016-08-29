@@ -119,6 +119,8 @@ class OTGS_Mocked_WP_Core_Functions {
 	}
 
 	public function post_functions() {
+		$this->meta_functions();
+
 		$that = $this;
 		\WP_Mock::wpFunction( 'get_post', array(
 			'return' => /**
@@ -304,6 +306,8 @@ class OTGS_Mocked_WP_Core_Functions {
 	}
 
 	public function meta_functions() {
+		$this->functions();
+
 		$that = $this;
 
 		\WP_Mock::wpFunction( 'get_metadata', array(
