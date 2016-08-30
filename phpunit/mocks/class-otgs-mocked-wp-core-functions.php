@@ -229,6 +229,18 @@ class OTGS_Mocked_WP_Core_Functions {
 				return update_metadata( 'post', $post_id, $meta_key, $meta_value, $prev_value );
 			},
 		) );
+
+		\WP_Mock::wpFunction( 'add_post_meta', array(
+			'return' => function ( $post_id, $meta_key, $meta_value, $unique = false ) {
+				return add_metadata( 'post', $post_id, $meta_key, $meta_value, $unique = false );
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'delete_post_meta', array(
+			'return' => function ( $post_id, $meta_key, $meta_value ) {
+				return delete_metadata( 'post', $post_id, $meta_key, $meta_value );
+			},
+		) );
 	}
 
 	public function taxonomy_functions() {
@@ -328,7 +340,7 @@ class OTGS_Mocked_WP_Core_Functions {
 
 				if ( isset( $meta_cache[ $object_id ][ $meta_key ] ) ) {
 					if ( $single ) {
-						return maybe_unserialize( $meta_cache[ $object_id ][ $meta_key ][0] );
+						return maybe_unserialize( array_pop( $meta_cache[ $object_id ][ $meta_key ] ) );
 					} else {
 						return array_map( 'maybe_unserialize', $meta_cache[ $object_id ][ $meta_key ] );
 					}
@@ -354,6 +366,51 @@ class OTGS_Mocked_WP_Core_Functions {
 				$meta_value = maybe_serialize( $meta_value );
 
 				$that->meta_cache[ $meta_type ][ $object_id ][ $meta_key ][] = $meta_value;
+
+				return true;
+			},
+		) );
+
+
+		\WP_Mock::wpFunction( 'add_metadata', array(
+			'return' => function ( $meta_type, $object_id, $meta_key, $meta_value, $unique = false ) use ( $that ) {
+				if ( ! $meta_type || ! $meta_key || ! is_numeric( $object_id ) ) {
+					return false;
+				}
+
+				$object_id = absint( $object_id );
+				if ( ! $object_id ) {
+					return false;
+				}
+
+				$meta_value = maybe_serialize( $meta_value );
+
+				if ( $unique ) {
+					$that->meta_cache[ $meta_type ][ $object_id ][ $meta_key ] = array( $meta_value );
+				} else {
+					$that->meta_cache[ $meta_type ][ $object_id ][ $meta_key ][] = $meta_value;
+				}
+
+				return true;
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'delete_metadata', array(
+			'return' => function ( $meta_type, $object_id, $meta_key, $meta_value ) use ( $that ) {
+				if ( ! $meta_type || ! $meta_key || ! is_numeric( $object_id ) ) {
+					return false;
+				}
+
+				$object_id = absint( $object_id );
+				if ( ! $object_id ) {
+					return false;
+				}
+
+				$meta_value = maybe_serialize( $meta_value );
+
+
+				$index = array_search( $meta_value, $that->meta_cache[ $meta_type ][ $object_id ][ $meta_key ] );
+				unset( $that->meta_cache[ $meta_type ][ $object_id ][ $meta_key ][ $index ] );
 
 				return true;
 			},

@@ -38,4 +38,5 @@ class wpdb {
 
 	function get_results(){}
 	function prepare(){}
+	function get_col(){}
 }
