@@ -595,6 +595,12 @@ class OTGS_Mocked_WP_Core_Functions {
 			},
 		) );
 
+		\WP_Mock::wpFunction( 'wp_send_json', array(
+			'return' => function ( $response = null ) {
+				echo json_encode( $response );
+			},
+		) );
+
 		\WP_Mock::wpFunction( 'wp_send_json_success', array(
 			'return' => function ( $data = null ) {
 				$response = array( 'success' => true );
