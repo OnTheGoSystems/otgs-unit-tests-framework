@@ -722,4 +722,25 @@ class OTGS_Mocked_WP_Core_Functions {
 			},
 		) );
 	}
+
+	public function transient_functions() {
+		$that = $this;
+		\WP_Mock::wpFunction( 'set_transient', array(
+			'return' => function ( $key, $value, $expires ) use ( $that ) {
+				$that->options[ $key ] = $value;
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'get_transient', array(
+			'return' => function ( $key ) use ( $that ) {
+				return isset( $that->options[ $key ] ) ? $that->options[ $key ] : '';
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'delete_transient', array(
+			'return' => function ( $key ) use ( $that ) {
+				unset( $that->options[ $key ] );
+			},
+		) );
+	}
 }
