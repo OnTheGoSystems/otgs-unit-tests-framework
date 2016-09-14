@@ -657,6 +657,16 @@ class OTGS_Mocked_WP_Core_Functions {
 				$that->options[ $option ] = $value;
 			},
 		) );
+
+		\WP_Mock::wpFunction( 'delete_option', array(
+			'return' => function ( $option ) use ( $that ) {
+				if ( array_key_exists( $option, $that->options ) ) {
+					unset( $that->options );
+					return true;
+				}
+				return false;
+			},
+		) );
 	}
 
 	public function wp_error() {
