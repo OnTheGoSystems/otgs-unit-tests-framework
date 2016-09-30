@@ -552,6 +552,12 @@ class OTGS_Mocked_WP_Core_Functions {
 			},
 		) );
 
+		\WP_Mock::wpFunction( 'esc_sql', array(
+			'return' => function ( $input ) {
+				return $input;
+			},
+		) );
+
 		\WP_Mock::wpFunction( 'trailingslashit', array(
 			'return' => function ( $input ) {
 				return untrailingslashit( $input ) . '/';
