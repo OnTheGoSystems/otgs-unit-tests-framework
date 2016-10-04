@@ -667,7 +667,7 @@ class OTGS_Mocked_WP_Core_Functions {
 		\WP_Mock::wpFunction( 'delete_option', array(
 			'return' => function ( $option ) use ( $that ) {
 				if ( array_key_exists( $option, $that->options ) ) {
-					unset( $that->options );
+					unset( $that->options[ $option ] );
 					return true;
 				}
 				return false;
