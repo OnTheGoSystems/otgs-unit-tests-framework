@@ -113,6 +113,14 @@ class OTGS_Mocked_WP_Core_Functions {
 					return serialize( $data );
 				}
 
+				// As per comment in WP.
+				// Double serialization is required for backward compatibility.
+				// See https://core.trac.wordpress.org/ticket/12930
+				// Also the world will end. See WP 3.6.1.
+				if ( is_serialized( $data ) ) {
+					return serialize( $data );
+				}
+
 				return $data;
 			},
 		) );
@@ -134,6 +142,16 @@ class OTGS_Mocked_WP_Core_Functions {
 		\WP_Mock::wpFunction( 'is_network_admin', array(
 			'return' => function () use ( $that ) {
 				return (bool) $that->is_network_admin;
+			},
+		) );
+		\WP_Mock::wpFunction( 'is_serialized', array(
+			'return' => function ( $data ) {
+				$array = @unserialize( $data );
+				if ( $array === false && $data !== 'b:0;' ) {
+					return false;
+				}
+
+				return true;
 			},
 		) );
 	}
