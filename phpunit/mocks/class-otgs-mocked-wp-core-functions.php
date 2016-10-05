@@ -21,6 +21,7 @@ class OTGS_Mocked_WP_Core_Functions {
 	public    $shortcode_tags   = array();
 
 	public function functions() {
+		$that = $this;
 		\WP_Mock::wpFunction( 'wp_json_encode', array(
 			'return' => function ( $data, $options = 0, $depth = 512 ) {
 				return json_encode( $data, $options, $depth );
