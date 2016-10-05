@@ -15,6 +15,10 @@ class OTGS_Mocked_WP_Core_Functions {
 	public    $current_user_id = 0;
 	public    $current_user;
 	protected $filter_id_count = 0;
+	public    $is_admin        = false;
+	public    $is_multisite    = false;
+	public    $is_network_admin = false;
+	public    $shortcode_tags   = array();
 
 	public function functions() {
 		\WP_Mock::wpFunction( 'wp_json_encode', array(
@@ -114,6 +118,21 @@ class OTGS_Mocked_WP_Core_Functions {
 		\WP_Mock::wpFunction( 'absint', array(
 			'return' => function ( $maybeint ) {
 				return abs( (int) $maybeint );
+			},
+		) );
+		\WP_Mock::wpFunction( 'is_admin', array(
+			'return' => function () use ( $that ) {
+				return (bool) $that->is_admin;
+			},
+		) );
+		\WP_Mock::wpFunction( 'is_multisite', array(
+			'return' => function () use ( $that ) {
+				return (bool) $that->is_multisite;
+			},
+		) );
+		\WP_Mock::wpFunction( 'is_network_admin', array(
+			'return' => function () use ( $that ) {
+				return (bool) $that->is_network_admin;
 			},
 		) );
 	}
@@ -756,6 +775,15 @@ class OTGS_Mocked_WP_Core_Functions {
 		\WP_Mock::wpFunction( 'delete_transient', array(
 			'return' => function ( $key ) use ( $that ) {
 				unset( $that->options[ $key ] );
+			},
+		) );
+	}
+
+	public function shortcode_functions() {
+		$that = $this;
+		\WP_Mock::wpFunction( 'add_shortcode', array(
+			'return' => function ( $tag, $function ) use ( $that ) {
+				$this->shortcode_tags[ $tag ] = $function;
 			},
 		) );
 	}
