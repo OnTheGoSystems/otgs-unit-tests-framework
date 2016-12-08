@@ -806,4 +806,18 @@ class OTGS_Mocked_WP_Core_Functions {
 			},
 		) );
 	}
+
+	public function nonce() {
+		\WP_Mock::wpFunction( 'wp_create_nonce', array(
+			'return' => function ( $action ) {
+				return md5( 'nonce' . $action );
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'wp_verify_nonce', array(
+			'return' => function ( $nonce, $action ) {
+				return $nonce === wp_create_nonce( $action );
+			},
+		) );
+	}
 }
