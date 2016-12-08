@@ -71,6 +71,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 		$functions->transient_functions();
 		$functions->query();
 		$functions->shortcode_functions();
+		$functions->nonce();
 	}
 }
 
