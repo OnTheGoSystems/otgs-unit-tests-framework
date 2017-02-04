@@ -19,3 +19,4 @@ Thumbs.db
 ## Files
 
 !/composer.json
+/composer.lock
