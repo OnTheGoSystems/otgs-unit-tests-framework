@@ -106,6 +106,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	protected function get_wp_query_stub() {
 		$methods = array(
 			'is_category',
+			'set',
 			'get',
 			'is_tag',
 			'is_tax',
