@@ -18,9 +18,10 @@
   "prefer-stable": true,
   "require": {
     "roave/security-advisories": "dev-master",
+    "10up/wp_mock": "dev-master",
+    "lucatume/function-mocker": "~1.0",
     "league/factory-muffin": "^3.0",
     "league/factory-muffin-faker": "^2.0",
-    "lucatume/function-mocker": "~1.0",
     "phpunit/phpunit": "^5"
   },
   "autoload": {
