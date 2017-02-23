@@ -70,5 +70,53 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 		$functions->shortcode_functions();
 		$functions->nonce();
 	}
+
+	/**
+	 * @return wpdb|PHPUnit_Framework_MockObject_MockObject
+	 */
+	protected function get_wpdb_stub() {
+		$methods = array(
+			'prepare',
+			'query',
+			'get_results',
+			'get_var',
+			'get_row',
+			'delete',
+			'update',
+			'insert',
+		);
+
+		$wpdb = $this->getMockBuilder( 'wpdb' )->disableOriginalConstructor()->setMethods( $methods )->getMock();
+
+		$wpdb->prefix             = 'wp_';
+		$wpdb->posts              = 'posts';
+		$wpdb->postmeta           = 'post_meta';
+		$wpdb->comments           = 'comments';
+		$wpdb->commentmeta        = 'comment_meta';
+		$wpdb->terms              = 'terms';
+		$wpdb->term_taxonomy      = 'term_taxonomy';
+		$wpdb->term_relationships = 'term_relationships';
+
+		return $wpdb;
+	}
+
+	/**
+	 * @return WP_Query|PHPUnit_Framework_MockObject_MockObject
+	 */
+	protected function get_wp_query_stub() {
+		$methods = array(
+			'is_category',
+			'get',
+			'is_tag',
+			'is_tax',
+			'get_queried_object_id',
+			'is_archive',
+			'is_attachment',
+			'is_page',
+			'is_singular',
+		);
+
+		return $this->getMockBuilder( 'WP_Query' )->disableOriginalConstructor()->setMethods( $methods )->getMock();
+	}
 }
 
