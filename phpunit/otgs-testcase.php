@@ -1,5 +1,6 @@
 <?php
 use League\FactoryMuffin\FactoryMuffin;
+use tad\FunctionMocker\FunctionMocker;
 
 /**
  * @author OnTheGo Systems
@@ -17,14 +18,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 		$_GET    = array();
 		$_POST   = array();
 
-		// create a new factory muffin instance
 		static::$fm = new FactoryMuffin();
-
-		// you can customize the save/delete methods
-		// new FactoryMuffin(new ModelStore('save', 'delete'));
-
-		// load your model definitions
-		//		static::$fm->loadFactories( __DIR__ . '/factories/' );
 	}
 
 	public static function tearDownAfterClass() {
@@ -33,11 +27,14 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 
 	function setUp() {
 		parent::setUp();
-		\WP_Mock::setUp();
+		FunctionMocker::setUp();
+		WP_Mock::setUp();
 	}
 
 	function tearDown() {
-		\WP_Mock::tearDown();
+		WP_Mock::tearDown();
+		FunctionMocker::tearDown();
+		Mockery::close();
 		parent::tearDown();
 	}
 
