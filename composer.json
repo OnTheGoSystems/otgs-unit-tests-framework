@@ -22,6 +22,9 @@
     "lucatume/function-mocker": "~1.0",
     "league/factory-muffin": "^3.0",
     "league/factory-muffin-faker": "^2.0",
+    "symfony/dom-crawler": "^3.1",
+    "symfony/css-selector": "^3.1",
+    "joshtronic/php-loremipsum": "dev-master",
     "phpunit/phpunit": "^5"
   },
   "autoload": {
