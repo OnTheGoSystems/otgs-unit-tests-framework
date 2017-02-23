@@ -4,21 +4,31 @@
  * @author OnTheGo Systems
  */
 class OTGS_Mocked_WP_Core_Functions {
-	public    $posts           = array();
-	public    $terms           = array();
-	public    $term_taxonomy   = array();
-	public    $meta_cache      = array();
-	public    $options         = array();
-	public    $wp_filter       = array();
-	public    $merged_filters  = array();
-	public    $cache           = array();
-	public    $current_user_id = 0;
+	private   $caller;
+	public    $posts            = array();
+	public    $terms            = array();
+	public    $term_taxonomy    = array();
+	public    $meta_cache       = array();
+	public    $options          = array();
+	public    $wp_filter        = array();
+	public    $merged_filters   = array();
+	public    $cache            = array();
+	public    $current_user_id  = 0;
 	public    $current_user;
-	protected $filter_id_count = 0;
-	public    $is_admin        = false;
-	public    $is_multisite    = false;
+	protected $filter_id_count  = 0;
+	public    $is_admin         = false;
+	public    $is_multisite     = false;
 	public    $is_network_admin = false;
 	public    $shortcode_tags   = array();
+
+	/**
+	 * OTGS_Mocked_WP_Core_Functions constructor.
+	 *
+	 * @param $caller
+	 */
+	public function __construct( OTGS_TestCase $caller ) {
+		$this->caller = $caller;
+	}
 
 	public function functions() {
 		$that = $this;
@@ -458,6 +468,10 @@ class OTGS_Mocked_WP_Core_Functions {
 	public function plugins_functions() {
 		$that = $this;
 
+		if ( ! defined( 'WP_PLUGIN_URL' ) ) {
+			define( 'WP_PLUGIN_URL', '' );
+		}
+
 		\WP_Mock::wpFunction( 'plugin_dir_url', array(
 			'return' => function ( $input ) {
 				return trailingslashit( plugins_url( '', $input ) );
@@ -762,10 +776,15 @@ class OTGS_Mocked_WP_Core_Functions {
 	}
 
 	public function theme() {
+		$caller = $this->caller;
+
 		\WP_Mock::wpFunction( 'wp_get_theme', array(
-			'return' => function ( $plugin_file, $markup = true, $translate = true ) {
-				return new WP_Theme( $plugin_file, '' );
-			},
+			'return' => function ( $plugin_file, $markup = true, $translate = true ) use ( $caller ) {
+				$wp_theme = $caller->get_wp_theme_stub();
+				$wp_theme->method( 'get' )->with( 'Name' )->willReturn( $plugin_file );
+
+				return $wp_theme;
+			}
 		) );
 	}
 
@@ -802,7 +821,7 @@ class OTGS_Mocked_WP_Core_Functions {
 		$that = $this;
 		\WP_Mock::wpFunction( 'add_shortcode', array(
 			'return' => function ( $tag, $function ) use ( $that ) {
-				$this->shortcode_tags[ $tag ] = $function;
+				$that->shortcode_tags[ $tag ] = $function;
 			},
 		) );
 	}

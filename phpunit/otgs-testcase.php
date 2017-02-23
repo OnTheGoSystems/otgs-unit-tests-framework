@@ -43,7 +43,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	 */
 	protected function get_mocked_wp_core_functions() {
 		if ( ! $this->mocked_wp_core_functions ) {
-			$this->mocked_wp_core_functions = new OTGS_Mocked_WP_Core_Functions();
+			$this->mocked_wp_core_functions = new OTGS_Mocked_WP_Core_Functions($this);
 		}
 
 		return $this->mocked_wp_core_functions;
@@ -118,6 +118,47 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 		);
 
 		return $this->getMockBuilder( 'WP_Query' )->disableOriginalConstructor()->setMethods( $methods )->getMock();
+	}
+
+	/**
+	 * @return WP_Filesystem_Direct|PHPUnit_Framework_MockObject_MockObject
+	 */
+	function get_wp_filesystem_direct_stub() {
+		$methods = array( 'exists', 'is_readable', 'get_contents_array' );
+
+		return $this->getMockBuilder( 'WP_Filesystem_Direct' )->disableOriginalConstructor()->setMethods( $methods )->getMock();
+	}
+
+	function get_wp_theme_stub() {
+		$methods = array(
+			'get',
+			'exists',
+			'parent',
+			'display',
+			'get_stylesheet',
+			'get_template',
+			'get_stylesheet_directory',
+			'get_template_directory',
+			'get_stylesheet_directory_uri',
+			'get_template_directory_uri',
+			'get_theme_root',
+			'get_theme_root_uri',
+			'get_screenshot',
+			'get_files',
+			'get_post_templates',
+			'get_page_templates',
+			'load_textdomain',
+			'is_allowed',
+			'get_core_default_theme',
+			'get_allowed',
+			'get_allowed_on_network',
+			'get_allowed_on_site',
+			'network_enable_theme',
+			'network_disable_theme',
+			'sort_by_name',
+		);
+
+		return $this->getMockBuilder( 'WP_Theme' )->setMethods( $methods )->getMock();
 	}
 }
 
