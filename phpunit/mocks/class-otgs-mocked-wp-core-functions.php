@@ -32,11 +32,6 @@ class OTGS_Mocked_WP_Core_Functions {
 
 	public function functions() {
 		$that = $this;
-		\WP_Mock::wpFunction( 'wp_json_encode', array(
-			'return' => function ( $data, $options = 0, $depth = 512 ) {
-				return json_encode( $data, $options, $depth );
-			},
-		) );
 
 		\WP_Mock::wpFunction( 'add_query_arg', array(
 			'return' => function () {
@@ -159,6 +154,53 @@ class OTGS_Mocked_WP_Core_Functions {
 				$array = @unserialize( $data );
 
 				return ! ( $array === false && $data !== 'b:0;' );
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'wp_json_encode', array(
+			'return' => function ( $data, $options = 0, $depth = 512 ) {
+				return json_encode( $data, $options, $depth );
+			},
+		) );
+
+		\WP_Mock::wpFunction( 'wp_send_json', array(
+			'return' => function ( $response = null ) {
+				echo wp_json_encode( $response );
+			},
+		) );
+		\WP_Mock::wpFunction( 'wp_send_json_success', array(
+			'return' => function ( $data = null ) {
+				$response = array( 'success' => true );
+
+				if ( $data ) {
+					$response['data'] = $data;
+				}
+
+				return $response;
+			},
+		) );
+		\WP_Mock::wpFunction( 'wp_send_json_error', array(
+			'return' => function ( $data = null ) {
+				$response = array( 'success' => false );
+
+				if ( $data ) {
+					if ( is_wp_error( $data ) ) {
+						/** @var WP_Error $data */
+						$result = array();
+						foreach ( $data->errors as $code => $messages ) {
+							/** @var array $messages */
+							foreach ( $messages as $message ) {
+								$result[] = array( 'code' => $code, 'message' => $message );
+							}
+						}
+
+						$response['data'] = $result;
+					} else {
+						$response['data'] = $data;
+					}
+				}
+
+				return $response;
 			},
 		) );
 	}
@@ -522,48 +564,8 @@ class OTGS_Mocked_WP_Core_Functions {
 			},
 		) );
 
-		\WP_Mock::wpFunction( 'wp_send_json', array(
-			'return' => function ( $response = null ) {
-				echo wp_json_encode( $response );
-			},
-		) );
-
-		\WP_Mock::wpFunction( 'wp_send_json_success', array(
-			'return' => function ( $data = null ) {
-				$response = array( 'success' => true );
-
-				if ( $data ) {
-					$response['data'] = $data;
-				}
-
-				return $response;
-			},
-		) );
-
-		\WP_Mock::wpFunction( 'wp_send_json_error', array(
-			'return' => function ( $data = null ) {
-				$response = array( 'success' => false );
-
-				if ( $data ) {
-					if ( is_wp_error( $data ) ) {
-						/** @var WP_Error $data */
-						$result = array();
-						foreach ( $data->errors as $code => $messages ) {
-							/** @var array $messages */
-							foreach ( $messages as $message ) {
-								$result[] = array( 'code' => $code, 'message' => $message );
-							}
-						}
-
-						$response['data'] = $result;
-					} else {
-						$response['data'] = $data;
-					}
-				}
-
-				return $response;
-			},
-		) );
+		//@todo This has been added for backward compatibility: remove after the next major version
+		$this->functions();
 	}
 
 	public function option() {
