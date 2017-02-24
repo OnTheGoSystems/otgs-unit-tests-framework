@@ -43,7 +43,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	 */
 	protected function get_mocked_wp_core_functions() {
 		if ( ! $this->mocked_wp_core_functions ) {
-			$this->mocked_wp_core_functions = new OTGS_Mocked_WP_Core_Functions($this);
+			$this->mocked_wp_core_functions = new OTGS_Mocked_WP_Core_Functions( $this );
 		}
 
 		return $this->mocked_wp_core_functions;

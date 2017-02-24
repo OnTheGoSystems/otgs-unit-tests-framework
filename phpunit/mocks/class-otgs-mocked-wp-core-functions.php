@@ -92,7 +92,7 @@ class OTGS_Mocked_WP_Core_Functions {
 					$qs[ $args[0] ] = $args[1];
 				}
 
-				foreach ( $qs as $k => $v ) {
+				foreach ( (array) $qs as $k => $v ) {
 					if ( $v === false ) {
 						unset( $qs[ $k ] );
 					}
@@ -178,7 +178,7 @@ class OTGS_Mocked_WP_Core_Functions {
 			 *
 			 * @return array|mixed|null|stdClass
 			 */
-				function ( $post = null, $output = OBJECT, $filter = 'raw' ) use ( $that ) {
+				function ( $post = null, $output = OBJECT ) use ( $that ) {
 					if ( ! $post && array_key_exists( 'post', $GLOBALS ) ) {
 						$post = $GLOBALS['post'];
 					}
@@ -230,7 +230,7 @@ class OTGS_Mocked_WP_Core_Functions {
 				if ( ! empty( $postarr['ID'] ) ) {
 					$post_ID     = $postarr['ID'];
 					$post_before = get_post( $post_ID );
-					if ( is_null( $post_before ) ) {
+					if ( ! $post_before ) {
 						if ( $wp_error ) {
 							$error                           = new stdClass();
 							$error->errors['invalid_post'][] = 'Invalid post ID.';
@@ -243,7 +243,7 @@ class OTGS_Mocked_WP_Core_Functions {
 				}
 
 				$_post = new stdClass();
-				foreach ( $postarr as $key => $value ) {
+				foreach ( (array) $postarr as $key => $value ) {
 					// Add the value to the object
 					if ( in_array( $key, array( 'id', 'ID', 'post_id' ), true ) ) {
 						$_post->ID = $value;
@@ -279,7 +279,7 @@ class OTGS_Mocked_WP_Core_Functions {
 		) );
 
 		\WP_Mock::wpFunction( 'add_post_meta', array(
-			'return' => function ( $post_id, $meta_key, $meta_value, $unique = false ) {
+			'return' => function ( $post_id, $meta_key, $meta_value ) {
 				return add_metadata( 'post', $post_id, $meta_key, $meta_value, $unique = false );
 			},
 		) );
@@ -402,7 +402,7 @@ class OTGS_Mocked_WP_Core_Functions {
 			},
 		) );
 		\WP_Mock::wpFunction( 'update_metadata', array(
-			'return' => function ( $meta_type, $object_id, $meta_key, $meta_value, $prev_value = '' ) use ( $that ) {
+			'return' => function ( $meta_type, $object_id, $meta_key, $meta_value ) use ( $that ) {
 				if ( ! $meta_type || ! $meta_key || ! is_numeric( $object_id ) ) {
 					return false;
 				}
@@ -456,8 +456,7 @@ class OTGS_Mocked_WP_Core_Functions {
 
 				$meta_value = maybe_serialize( $meta_value );
 
-
-				$index = array_search( $meta_value, $that->meta_cache[ $meta_type ][ $object_id ][ $meta_key ] );
+				$index = array_search( $meta_value, $that->meta_cache[ $meta_type ][ $object_id ][ $meta_key ], true );
 				unset( $that->meta_cache[ $meta_type ][ $object_id ][ $meta_key ][ $index ] );
 
 				return true;
@@ -479,7 +478,7 @@ class OTGS_Mocked_WP_Core_Functions {
 		) );
 
 		\WP_Mock::wpFunction( 'plugins_url', array(
-			'return' => function ( $path = '', $plugin = '' ) {
+			'return' => function () {
 				return WP_PLUGIN_URL;
 			},
 		) );
@@ -572,43 +571,25 @@ class OTGS_Mocked_WP_Core_Functions {
 	}
 
 	public function i10n_functions() {
-		\WP_Mock::wpFunction( 'esc_html__', array(
-			'return' => function ( $input, $context ) {
-				return __( $input, $context );
-			},
-		) );
+		\WP_Mock::wpPassthruFunction( 'esc_html__' );
+		\WP_Mock::wpPassthruFunction( 'esc_attr__' );
+		\WP_Mock::wpPassthruFunction( 'esc_html_x' );
+		\WP_Mock::wpPassthruFunction( 'esc_attr_x' );
+		\WP_Mock::wpPassthruFunction( 'esc_html_e' );
+		\WP_Mock::wpPassthruFunction( 'esc_attr_e' );
 
-		\WP_Mock::wpFunction( '__', array(
-			'return' => function ( $input, $context ) {
-				return $context . '|||' . $input;
-			},
-		) );
+		\WP_Mock::wpPassthruFunction( '_c' );
+		\WP_Mock::wpPassthruFunction( '__' );
+		\WP_Mock::wpPassthruFunction( '_x' );
+		\WP_Mock::wpPassthruFunction( '_n' );
 	}
 
 	public function formatting_functions() {
-		\WP_Mock::wpFunction( 'esc_attr', array(
-			'return' => function ( $input ) {
-				return $input;
-			},
-		) );
-
-		\WP_Mock::wpFunction( 'esc_url_raw', array(
-			'return' => function ( $input ) {
-				return $input;
-			},
-		) );
-
-		\WP_Mock::wpFunction( 'esc_html', array(
-			'return' => function ( $input ) {
-				return $input;
-			},
-		) );
-
-		\WP_Mock::wpFunction( 'esc_sql', array(
-			'return' => function ( $input ) {
-				return $input;
-			},
-		) );
+		\WP_Mock::wpPassthruFunction( 'esc_attr' );
+		\WP_Mock::wpPassthruFunction( 'esc_url_raw' );
+		\WP_Mock::wpPassthruFunction( 'esc_html' );
+		\WP_Mock::wpPassthruFunction( 'esc_sql' );
+		\WP_Mock::wpPassthruFunction( 'sanitize_text_field' );
 
 		\WP_Mock::wpFunction( 'trailingslashit', array(
 			'return' => function ( $input ) {
@@ -621,16 +602,13 @@ class OTGS_Mocked_WP_Core_Functions {
 				return rtrim( $input, '/\\' );
 			},
 		) );
-
-		\WP_Mock::wpFunction( 'sanitize_text_field', array(
-			'return' => function ( $input ) {
-				return $input;
-			},
-		) );
 	}
 
 	public function user_functions() {
 		$that = $this;
+
+		$this->functions();
+		$this->wp_error();
 
 		\WP_Mock::wpFunction( 'get_current_user_id', array(
 			'return' => function () use ( $that ) {
@@ -655,7 +633,7 @@ class OTGS_Mocked_WP_Core_Functions {
 
 		\WP_Mock::wpFunction( 'wp_send_json', array(
 			'return' => function ( $response = null ) {
-				echo json_encode( $response );
+				echo wp_json_encode( $response );
 			},
 		) );
 
@@ -663,7 +641,7 @@ class OTGS_Mocked_WP_Core_Functions {
 			'return' => function ( $data = null ) {
 				$response = array( 'success' => true );
 
-				if ( isset( $data ) ) {
+				if ( $data ) {
 					$response['data'] = $data;
 				}
 
@@ -675,7 +653,7 @@ class OTGS_Mocked_WP_Core_Functions {
 			'return' => function ( $data = null ) {
 				$response = array( 'success' => false );
 
-				if ( isset( $data ) ) {
+				if ( $data ) {
 					if ( is_wp_error( $data ) ) {
 						/** @var WP_Error $data */
 						$result = array();
@@ -711,7 +689,7 @@ class OTGS_Mocked_WP_Core_Functions {
 		) );
 
 		\WP_Mock::wpFunction( 'update_option', array(
-			'return' => function ( $option, $value, $autoload = null ) use ( $that ) {
+			'return' => function ( $option, $value ) use ( $that ) {
 				$that->options[ $option ] = $value;
 			},
 		) );
@@ -736,8 +714,10 @@ class OTGS_Mocked_WP_Core_Functions {
 	}
 
 	public function link_template() {
+		$this->post_functions();
+
 		\WP_Mock::wpFunction( 'plugins_url', array(
-			'return' => function ( $path = '', $plugin = '' ) {
+			'return' => function ( $path = '' ) {
 				return $path;
 			},
 		) );
@@ -749,7 +729,7 @@ class OTGS_Mocked_WP_Core_Functions {
 		) );
 
 		\WP_Mock::wpFunction( 'get_permalink', array(
-			'return' => function ( $id = 0, $leavename = false ) {
+			'return' => function ( $id = 0 ) {
 				$post = get_post( $id );
 
 				return WPML_TESTS_SITE_URL . '/' . $post->post_title;
@@ -759,7 +739,7 @@ class OTGS_Mocked_WP_Core_Functions {
 
 	public function plugin() {
 		\WP_Mock::wpFunction( 'get_plugin_data', array(
-			'return' => function ( $plugin_file, $markup = true, $translate = true ) {
+			'return' => function ( $plugin_file ) {
 				return array(
 					'Name'        => 'Plugin Name: ' . $plugin_file,
 					'PluginURI'   => 'Plugin URI: ' . $plugin_file,
@@ -779,7 +759,7 @@ class OTGS_Mocked_WP_Core_Functions {
 		$caller = $this->caller;
 
 		\WP_Mock::wpFunction( 'wp_get_theme', array(
-			'return' => function ( $plugin_file, $markup = true, $translate = true ) use ( $caller ) {
+			'return' => function ( $plugin_file ) use ( $caller ) {
 				$wp_theme = $caller->get_wp_theme_stub();
 				$wp_theme->method( 'get' )->with( 'Name' )->willReturn( $plugin_file );
 
@@ -798,21 +778,22 @@ class OTGS_Mocked_WP_Core_Functions {
 
 	public function transient_functions() {
 		$that = $this;
+		$this->option_functions();
 		\WP_Mock::wpFunction( 'set_transient', array(
-			'return' => function ( $key, $value, $expires ) use ( $that ) {
-				$that->options[ $key ] = $value;
+			'return' => function ( $key, $value ) use ( $that ) {
+				update_option( $key, $value );
 			},
 		) );
 
 		\WP_Mock::wpFunction( 'get_transient', array(
 			'return' => function ( $key ) use ( $that ) {
-				return isset( $that->options[ $key ] ) ? $that->options[ $key ] : '';
+				return get_option( $key );
 			},
 		) );
 
 		\WP_Mock::wpFunction( 'delete_transient', array(
 			'return' => function ( $key ) use ( $that ) {
-				unset( $that->options[ $key ] );
+				delete_option( $key );
 			},
 		) );
 	}
