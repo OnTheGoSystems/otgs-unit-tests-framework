@@ -5,21 +5,21 @@
  */
 class OTGS_Mocked_WP_Core_Functions {
 	private   $caller;
-	public    $posts            = array();
-	public    $terms            = array();
-	public    $term_taxonomy    = array();
-	public    $meta_cache       = array();
-	public    $options          = array();
-	public    $wp_filter        = array();
-	public    $merged_filters   = array();
-	public    $cache            = array();
-	public    $current_user_id  = 0;
+	protected $filter_id_count     = 0;
+	public    $data_posts          = array();
+	public    $data_terms          = array();
+	public    $data_term_taxonomy  = array();
+	public    $data_meta_cache     = array();
+	public    $data_options        = array();
+	public    $data_wp_filter      = array();
+	public    $data_merged_filters = array();
+	public    $data_cache          = array();
+	public    $current_user_id     = 0;
 	public    $current_user;
-	protected $filter_id_count  = 0;
-	public    $is_admin         = false;
-	public    $is_multisite     = false;
-	public    $is_network_admin = false;
-	public    $shortcode_tags   = array();
+	public    $is_admin            = false;
+	public    $is_multisite        = false;
+	public    $is_network_admin    = false;
+	public    $shortcode_tags      = array();
 
 	/**
 	 * OTGS_Mocked_WP_Core_Functions constructor.
@@ -157,17 +157,14 @@ class OTGS_Mocked_WP_Core_Functions {
 		\WP_Mock::wpFunction( 'is_serialized', array(
 			'return' => function ( $data ) {
 				$array = @unserialize( $data );
-				if ( $array === false && $data !== 'b:0;' ) {
-					return false;
-				}
 
-				return true;
+				return ! ( $array === false && $data !== 'b:0;' );
 			},
 		) );
 	}
 
-	public function post_functions() {
-		$this->meta_functions();
+	public function post() {
+		$this->meta();
 
 		$that = $this;
 		\WP_Mock::wpFunction( 'get_post', array(
@@ -206,8 +203,8 @@ class OTGS_Mocked_WP_Core_Functions {
 						$post_id = $post;
 					}
 
-					if ( array_key_exists( $post_id, $that->posts ) ) {
-						$_post = $that->posts[ $post_id ];
+					if ( array_key_exists( $post_id, $that->data_posts ) ) {
+						$_post = $that->data_posts[ $post_id ];
 					}
 
 					if ( ! $_post ) {
@@ -254,14 +251,14 @@ class OTGS_Mocked_WP_Core_Functions {
 
 				if ( ! isset( $_post->ID ) || ! $_post->ID ) {
 					$new_id = 1;
-					if ( $that->posts ) {
-						$ids    = array_keys( $that->posts );
+					if ( $that->data_posts ) {
+						$ids    = array_keys( $that->data_posts );
 						$new_id = max( $ids ) + 1;
 					}
 					$_post->ID = $new_id;
 				}
 
-				$that->posts[ $_post->ID ] = $_post;
+				$that->data_posts[ $_post->ID ] = $_post;
 
 				return $_post->ID;
 			},
@@ -291,7 +288,7 @@ class OTGS_Mocked_WP_Core_Functions {
 		) );
 	}
 
-	public function taxonomy_functions() {
+	public function taxonomy() {
 		$that = $this;
 		\WP_Mock::wpFunction( 'get_term', array(
 			'return' => function ( $term, $taxonomy = '', $output = OBJECT, $filter = 'raw' ) use ( $that ) {
@@ -311,8 +308,8 @@ class OTGS_Mocked_WP_Core_Functions {
 				}
 
 				$_term = null;
-				if ( array_key_exists( $_term_id, $that->terms ) ) {
-					$_term = $that->terms[ $_term_id ];
+				if ( array_key_exists( $_term_id, $that->data_terms ) ) {
+					$_term = $that->data_terms[ $_term_id ];
 				}
 
 				if ( ARRAY_A === $output ) {
@@ -335,18 +332,18 @@ class OTGS_Mocked_WP_Core_Functions {
 				$args['taxonomy']    = $taxonomy;
 				$args['description'] = (string) $args['description'];
 
-				$new_term_id          = count( $that->terms ) + 1;
+				$new_term_id = count( $that->data_terms ) + 1;
 				$new_term             = new stdClass();
 				$new_term->term_id    = $new_term_id;
 				$new_term->name       = $args['name'];
 				$new_term->slug       = $args['slug'];
 				$new_term->term_group = $args['term_group'];
 
-				if ( ! array_key_exists( $taxonomy, $that->term_taxonomy ) ) {
-					$that->term_taxonomy[ $taxonomy ] = array();
+				if ( ! array_key_exists( $taxonomy, $that->data_term_taxonomy ) ) {
+					$that->data_term_taxonomy[ $taxonomy ] = array();
 				}
 
-				$new_term_taxonomy_id = count( $that->term_taxonomy[ $taxonomy ] ) + 1;
+				$new_term_taxonomy_id = count( $that->data_term_taxonomy[ $taxonomy ] ) + 1;
 
 				$term_taxonomy              = new stdClass();
 				$term_taxonomy->term_id     = $new_term_id;
@@ -354,18 +351,18 @@ class OTGS_Mocked_WP_Core_Functions {
 				$term_taxonomy->description = $args['description'];
 				$term_taxonomy->parent      = (int) $args['parent'];
 
-				$that->term_taxonomy[ $taxonomy ][ $new_term_taxonomy_id ] = $term_taxonomy;
+				$that->data_term_taxonomy[ $taxonomy ][ $new_term_taxonomy_id ] = $term_taxonomy;
 
 				$new_term->term_taxonomy_id  = $new_term_taxonomy_id;
 				$new_term->taxonomy          = $taxonomy;
-				$that->terms[ $new_term_id ] = $new_term;
+				$that->data_terms[ $new_term_id ]                               = $new_term;
 
 				return array( $new_term_id, $new_term_taxonomy_id );
 			},
 		) );
 	}
 
-	public function meta_functions() {
+	public function meta() {
 		$this->functions();
 
 		$that = $this;
@@ -382,8 +379,8 @@ class OTGS_Mocked_WP_Core_Functions {
 				}
 
 				$meta_cache = null;
-				if ( array_key_exists( $meta_type, $that->meta_cache ) ) {
-					$meta_cache = $that->meta_cache[ $meta_type ];
+				if ( array_key_exists( $meta_type, $that->data_meta_cache ) ) {
+					$meta_cache = $that->data_meta_cache[ $meta_type ];
 				}
 
 				if ( isset( $meta_cache[ $object_id ][ $meta_key ] ) ) {
@@ -413,7 +410,7 @@ class OTGS_Mocked_WP_Core_Functions {
 				}
 				$meta_value = maybe_serialize( $meta_value );
 
-				$that->meta_cache[ $meta_type ][ $object_id ][ $meta_key ][] = $meta_value;
+				$that->data_meta_cache[ $meta_type ][ $object_id ][ $meta_key ][] = $meta_value;
 
 				return true;
 			},
@@ -434,9 +431,9 @@ class OTGS_Mocked_WP_Core_Functions {
 				$meta_value = maybe_serialize( $meta_value );
 
 				if ( $unique ) {
-					$that->meta_cache[ $meta_type ][ $object_id ][ $meta_key ] = array( $meta_value );
+					$that->data_meta_cache[ $meta_type ][ $object_id ][ $meta_key ] = array( $meta_value );
 				} else {
-					$that->meta_cache[ $meta_type ][ $object_id ][ $meta_key ][] = $meta_value;
+					$that->data_meta_cache[ $meta_type ][ $object_id ][ $meta_key ][] = $meta_value;
 				}
 
 				return true;
@@ -456,121 +453,15 @@ class OTGS_Mocked_WP_Core_Functions {
 
 				$meta_value = maybe_serialize( $meta_value );
 
-				$index = array_search( $meta_value, $that->meta_cache[ $meta_type ][ $object_id ][ $meta_key ], true );
-				unset( $that->meta_cache[ $meta_type ][ $object_id ][ $meta_key ][ $index ] );
+				$index = array_search( $meta_value, $that->data_meta_cache[ $meta_type ][ $object_id ][ $meta_key ], true );
+				unset( $that->data_meta_cache[ $meta_type ][ $object_id ][ $meta_key ][ $index ] );
 
 				return true;
 			},
 		) );
 	}
 
-	public function plugins_functions() {
-		$that = $this;
-
-		if ( ! defined( 'WP_PLUGIN_URL' ) ) {
-			define( 'WP_PLUGIN_URL', '' );
-		}
-
-		\WP_Mock::wpFunction( 'plugin_dir_url', array(
-			'return' => function ( $input ) {
-				return trailingslashit( plugins_url( '', $input ) );
-			},
-		) );
-
-		\WP_Mock::wpFunction( 'plugins_url', array(
-			'return' => function () {
-				return WP_PLUGIN_URL;
-			},
-		) );
-
-		\WP_Mock::wpFunction( 'add_action', array(
-			'return' => function ( $tag, $function_to_add, $priority = 10, $accepted_args = 1 ) {
-				return add_filter( $tag, $function_to_add, $priority, $accepted_args );
-			},
-		) );
-
-		\WP_Mock::wpFunction( 'add_filter', array(
-			'return' => function ( $tag, $function_to_add, $priority = 10, $accepted_args = 1 ) use ( $that ) {
-				$idx                                          = _wp_filter_build_unique_id( $tag, $function_to_add, $priority );
-				$that->wp_filter[ $tag ][ $priority ][ $idx ] = array( 'function' => $function_to_add, 'accepted_args' => $accepted_args );
-				unset( $that->merged_filters[ $tag ] );
-
-				return true;
-			},
-		) );
-
-		\WP_Mock::wpFunction( 'remove_action', array(
-			'return' => function ( $tag, $function_to_remove, $priority = 10 ) {
-				return remove_filter( $tag, $function_to_remove, $priority );
-			},
-		) );
-
-		\WP_Mock::wpFunction( 'remove_filter', array(
-			'return' => function ( $tag, $function_to_remove, $priority = 10 ) use ( $that ) {
-				$function_to_remove = _wp_filter_build_unique_id( $tag, $function_to_remove, $priority );
-
-				$r = isset( $that->wp_filter[ $tag ][ $priority ][ $function_to_remove ] );
-
-				if ( true === $r ) {
-					unset( $that->wp_filter[ $tag ][ $priority ][ $function_to_remove ] );
-					if ( empty( $that->wp_filter[ $tag ][ $priority ] ) ) {
-						unset( $that->wp_filter[ $tag ][ $priority ] );
-					}
-					if ( empty( $that->wp_filter[ $tag ] ) ) {
-						$that->wp_filter[ $tag ] = array();
-					}
-					unset( $that->merged_filters[ $tag ] );
-				}
-
-				return $r;
-			},
-		) );
-
-		\WP_Mock::wpFunction( '_wp_filter_build_unique_id', array(
-			'return' => function ( $tag, $function, $priority ) use ( $that ) {
-				if ( is_string( $function ) ) {
-					return $function;
-				}
-
-				$unique_id = null;
-
-				if ( is_object( $function ) ) {
-					// Closures are currently implemented as objects
-					$function = array( $function, '' );
-				} else {
-					$function = (array) $function;
-				}
-
-				if ( is_object( $function[0] ) ) {
-					// Object Class Calling
-					if ( function_exists( 'spl_object_hash' ) ) {
-						$unique_id = spl_object_hash( $function[0] ) . $function[1];
-					} else {
-						$obj_idx = get_class( $function[0] ) . $function[1];
-						if ( ! isset( $function[0]->wp_filter_id ) ) {
-							if ( false === $priority ) {
-								return false;
-							}
-							$obj_idx .= isset( $wp_filter[ $tag ][ $priority ] ) ? count( (array) $wp_filter[ $tag ][ $priority ] ) : $that->filter_id_count;
-							$function[0]->wp_filter_id = $that->filter_id_count;
-							++ $that->filter_id_count;
-						} else {
-							$obj_idx .= $function[0]->wp_filter_id;
-						}
-
-						$unique_id = $obj_idx;
-					}
-				} elseif ( is_string( $function[0] ) ) {
-					// Static Calling
-					$unique_id = $function[0] . '::' . $function[1];
-				}
-
-				return $unique_id;
-			},
-		) );
-	}
-
-	public function i10n_functions() {
+	public function i10n() {
 		\WP_Mock::wpPassthruFunction( 'esc_html__' );
 		\WP_Mock::wpPassthruFunction( 'esc_attr__' );
 		\WP_Mock::wpPassthruFunction( 'esc_html_x' );
@@ -584,7 +475,7 @@ class OTGS_Mocked_WP_Core_Functions {
 		\WP_Mock::wpPassthruFunction( '_n' );
 	}
 
-	public function formatting_functions() {
+	public function formatting() {
 		\WP_Mock::wpPassthruFunction( 'esc_attr' );
 		\WP_Mock::wpPassthruFunction( 'esc_url_raw' );
 		\WP_Mock::wpPassthruFunction( 'esc_html' );
@@ -604,7 +495,7 @@ class OTGS_Mocked_WP_Core_Functions {
 		) );
 	}
 
-	public function user_functions() {
+	public function user() {
 		$that = $this;
 
 		$this->functions();
@@ -675,13 +566,13 @@ class OTGS_Mocked_WP_Core_Functions {
 		) );
 	}
 
-	public function option_functions() {
+	public function option() {
 		$that = $this;
 
 		\WP_Mock::wpFunction( 'get_option', array(
 			'return' => function ( $option, $default_value = false ) use ( $that ) {
-				if ( array_key_exists( $option, $that->options ) ) {
-					return $that->options[ $option ];
+				if ( array_key_exists( $option, $that->data_options ) ) {
+					return $that->data_options[ $option ];
 				} else {
 					return $default_value;
 				}
@@ -690,19 +581,46 @@ class OTGS_Mocked_WP_Core_Functions {
 
 		\WP_Mock::wpFunction( 'update_option', array(
 			'return' => function ( $option, $value ) use ( $that ) {
-				$that->options[ $option ] = $value;
+				$that->data_options[ $option ] = $value;
 			},
 		) );
 
 		\WP_Mock::wpFunction( 'delete_option', array(
 			'return' => function ( $option ) use ( $that ) {
-				if ( array_key_exists( $option, $that->options ) ) {
-					unset( $that->options[ $option ] );
+				if ( array_key_exists( $option, $that->data_options ) ) {
+					unset( $that->data_options[ $option ] );
 					return true;
 				}
 				return false;
 			},
 		) );
+
+		\WP_Mock::wpFunction(
+			'set_transient',
+			array(
+				'return' => function ( $key, $value ) use ( $that ) {
+					update_option( $key, $value );
+				},
+			)
+		);
+
+		\WP_Mock::wpFunction(
+			'get_transient',
+			array(
+				'return' => function ( $key ) use ( $that ) {
+					return get_option( $key );
+				},
+			)
+		);
+
+		\WP_Mock::wpFunction(
+			'delete_transient',
+			array(
+				'return' => function ( $key ) use ( $that ) {
+					delete_option( $key );
+				},
+			)
+		);
 	}
 
 	public function wp_error() {
@@ -714,7 +632,7 @@ class OTGS_Mocked_WP_Core_Functions {
 	}
 
 	public function link_template() {
-		$this->post_functions();
+		$this->post();
 
 		\WP_Mock::wpFunction( 'plugins_url', array(
 			'return' => function ( $path = '' ) {
@@ -753,6 +671,131 @@ class OTGS_Mocked_WP_Core_Functions {
 				);
 			},
 		) );
+
+		$that = $this;
+
+		if ( ! defined( 'WP_PLUGIN_URL' ) ) {
+			define( 'WP_PLUGIN_URL', '' );
+		}
+
+		\WP_Mock::wpFunction(
+			'plugin_dir_url',
+			array(
+				'return' => function ( $input ) {
+					return trailingslashit( plugins_url( '', $input ) );
+				},
+			)
+		);
+
+		\WP_Mock::wpFunction(
+			'plugins_url',
+			array(
+				'return' => function () {
+					return WP_PLUGIN_URL;
+				},
+			)
+		);
+
+		\WP_Mock::wpFunction(
+			'add_action',
+			array(
+				'return' => function ( $tag, $function_to_add, $priority = 10, $accepted_args = 1 ) {
+					return add_filter( $tag, $function_to_add, $priority, $accepted_args );
+				},
+			)
+		);
+
+		\WP_Mock::wpFunction(
+			'add_filter',
+			array(
+				'return' => function ( $tag, $function_to_add, $priority = 10, $accepted_args = 1 ) use ( $that ) {
+					$idx                                               = _wp_filter_build_unique_id( $tag, $function_to_add, $priority );
+					$that->data_wp_filter[ $tag ][ $priority ][ $idx ] = array( 'function' => $function_to_add, 'accepted_args' => $accepted_args );
+					unset( $that->data_merged_filters[ $tag ] );
+
+					return true;
+				},
+			)
+		);
+
+		\WP_Mock::wpFunction(
+			'remove_action',
+			array(
+				'return' => function ( $tag, $function_to_remove, $priority = 10 ) {
+					return remove_filter( $tag, $function_to_remove, $priority );
+				},
+			)
+		);
+
+		\WP_Mock::wpFunction(
+			'remove_filter',
+			array(
+				'return' => function ( $tag, $function_to_remove, $priority = 10 ) use ( $that ) {
+					$function_to_remove = _wp_filter_build_unique_id( $tag, $function_to_remove, $priority );
+
+					$r = isset( $that->data_wp_filter[ $tag ][ $priority ][ $function_to_remove ] );
+
+					if ( true === $r ) {
+						unset( $that->data_wp_filter[ $tag ][ $priority ][ $function_to_remove ] );
+						if ( empty( $that->data_wp_filter[ $tag ][ $priority ] ) ) {
+							unset( $that->data_wp_filter[ $tag ][ $priority ] );
+						}
+						if ( empty( $that->data_wp_filter[ $tag ] ) ) {
+							$that->data_wp_filter[ $tag ] = array();
+						}
+						unset( $that->data_merged_filters[ $tag ] );
+					}
+
+					return $r;
+				},
+			)
+		);
+
+		\WP_Mock::wpFunction(
+			'_wp_filter_build_unique_id',
+			array(
+				'return' => function ( $tag, $function, $priority ) use ( $that ) {
+					if ( is_string( $function ) ) {
+						return $function;
+					}
+
+					$unique_id = null;
+
+					if ( is_object( $function ) ) {
+						// Closures are currently implemented as objects
+						$function = array( $function, '' );
+					} else {
+						$function = (array) $function;
+					}
+
+					if ( is_object( $function[0] ) ) {
+						// Object Class Calling
+						if ( function_exists( 'spl_object_hash' ) ) {
+							$unique_id = spl_object_hash( $function[0] ) . $function[1];
+						} else {
+							$obj_idx = get_class( $function[0] ) . $function[1];
+							if ( ! isset( $function[0]->wp_filter_id ) ) {
+								if ( false === $priority ) {
+									return false;
+								}
+								$obj_idx .= isset( $wp_filter[ $tag ][ $priority ] ) ? count( (array) $wp_filter[ $tag ][ $priority ] ) : $that->filter_id_count;
+								$function[0]->wp_filter_id = $that->filter_id_count;
+								++ $that->filter_id_count;
+							} else {
+								$obj_idx .= $function[0]->wp_filter_id;
+							}
+
+							$unique_id = $obj_idx;
+						}
+					} elseif ( is_string( $function[0] ) ) {
+						// Static Calling
+						$unique_id = $function[0] . '::' . $function[1];
+					}
+
+					return $unique_id;
+				},
+			)
+		);
 	}
 
 	public function theme() {
@@ -776,29 +819,7 @@ class OTGS_Mocked_WP_Core_Functions {
 		) );
 	}
 
-	public function transient_functions() {
-		$that = $this;
-		$this->option_functions();
-		\WP_Mock::wpFunction( 'set_transient', array(
-			'return' => function ( $key, $value ) use ( $that ) {
-				update_option( $key, $value );
-			},
-		) );
-
-		\WP_Mock::wpFunction( 'get_transient', array(
-			'return' => function ( $key ) use ( $that ) {
-				return get_option( $key );
-			},
-		) );
-
-		\WP_Mock::wpFunction( 'delete_transient', array(
-			'return' => function ( $key ) use ( $that ) {
-				delete_option( $key );
-			},
-		) );
-	}
-
-	public function shortcode_functions() {
+	public function shortcodes() {
 		$that = $this;
 		\WP_Mock::wpFunction( 'add_shortcode', array(
 			'return' => function ( $tag, $function ) use ( $that ) {
@@ -807,7 +828,7 @@ class OTGS_Mocked_WP_Core_Functions {
 		) );
 	}
 
-	public function nonce() {
+	public function pluggable() {
 		\WP_Mock::wpFunction( 'wp_create_nonce', array(
 			'return' => function ( $action ) {
 				return md5( 'nonce' . $action );
@@ -819,5 +840,82 @@ class OTGS_Mocked_WP_Core_Functions {
 				return $nonce === wp_create_nonce( $action );
 			},
 		) );
+	}
+
+	/**
+	 * @deprecated Use `\OTGS_Mocked_WP_Core_Functions::post` instead
+	 */
+	public function post_functions() {
+		$this->post();
+	}
+
+	/**
+	 * @deprecated Use `\OTGS_Mocked_WP_Core_Functions::taxonomu` instead
+	 */
+	public function taxonomy_functions() {
+		$this->taxonomy();
+	}
+
+	/**
+	 * @deprecated Use `\OTGS_Mocked_WP_Core_Functions::meta` instead
+	 */
+	public function meta_functions() {
+		$this->meta();
+	}
+
+	/**
+	 * @deprecated Use `\OTGS_Mocked_WP_Core_Functions::i10n` instead
+	 */
+	public function i10n_functions() {
+		$this->i10n();
+	}
+
+	/**
+	 * @deprecated Use `\OTGS_Mocked_WP_Core_Functions::formatting` instead
+	 */
+	public function formatting_functions() {
+		$this->formatting();
+	}
+
+	/**
+	 * @deprecated Use `\OTGS_Mocked_WP_Core_Functions::user` instead
+	 */
+	public function user_functions() {
+		$this->user();
+	}
+
+	/**
+	 * @deprecated Use `\OTGS_Mocked_WP_Core_Functions::option` instead
+	 */
+	public function option_functions() {
+		$this->option();
+	}
+
+	/**
+	 * @deprecated Use `\OTGS_Mocked_WP_Core_Functions::options` instead
+	 */
+	public function transient_functions() {
+		$this->option();
+	}
+
+	/**
+	 * @deprecated Use `\OTGS_Mocked_WP_Core_Functions::plugin` instead
+	 */
+	public function plugins_functions() {
+		$this->plugin();
+	}
+
+	/**
+	 * @deprecated Use `\OTGS_Mocked_WP_Core_Functions::shortcodes` instead
+	 */
+	public function shortcode_functions() {
+		$this->shortcodes();
+	}
+
+	/**
+	 * @deprecated Use `\OTGS_Mocked_WP_Core_Functions::pluggable` instead
+	 */
+	public function nonce() {
+		$this->pluggable();
 	}
 }
