@@ -54,21 +54,19 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 
 		$functions->functions();
 		$functions->wp_error();
-		$functions->post_functions();
-		$functions->taxonomy_functions();
-		$functions->meta_functions();
+		$functions->post();
+		$functions->taxonomy();
+		$functions->meta();
 		$functions->link_template();
 		$functions->plugin();
 		$functions->theme();
-		$functions->plugins_functions();
-		$functions->i10n_functions();
-		$functions->formatting_functions();
-		$functions->user_functions();
-		$functions->option_functions();
-		$functions->transient_functions();
+		$functions->i10n();
+		$functions->formatting();
+		$functions->user();
+		$functions->option();
 		$functions->query();
-		$functions->shortcode_functions();
-		$functions->nonce();
+		$functions->shortcodes();
+		$functions->pluggable();
 	}
 
 	/**
@@ -79,6 +77,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 			'prepare',
 			'query',
 			'get_results',
+			'get_col',
 			'get_var',
 			'get_row',
 			'delete',
@@ -88,6 +87,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 
 		$wpdb = $this->getMockBuilder( 'wpdb' )->disableOriginalConstructor()->setMethods( $methods )->getMock();
 
+		$wpdb->blogid             = 1;
 		$wpdb->prefix             = 'wp_';
 		$wpdb->posts              = 'posts';
 		$wpdb->postmeta           = 'post_meta';
