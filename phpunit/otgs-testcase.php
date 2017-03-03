@@ -6,10 +6,10 @@ use tad\FunctionMocker\FunctionMocker;
  * @author OnTheGo Systems
  */
 abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
-	/**
-	 * @var FactoryMuffin
-	 */
+	/** @var FactoryMuffin */
 	protected static $fm;
+	/** @var OTGS_Stubs */
+	protected $stubs;
 
 	/** @var OTGS_Mocked_WP_Core_Functions */
 	protected $mocked_wp_core_functions;
@@ -29,9 +29,11 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 		parent::setUp();
 		FunctionMocker::setUp();
 		WP_Mock::setUp();
+		$this->stubs = new OTGS_Stubs( $this );
 	}
 
 	function tearDown() {
+		unset( $this->stubs );
 		WP_Mock::tearDown();
 		FunctionMocker::tearDown();
 		Mockery::close();
@@ -70,95 +72,43 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
+	 * @deprecated Use `$this->stubs->wpdb()`
 	 * @return wpdb|PHPUnit_Framework_MockObject_MockObject
 	 */
 	protected function get_wpdb_stub() {
-		$methods = array(
-			'prepare',
-			'query',
-			'get_results',
-			'get_col',
-			'get_var',
-			'get_row',
-			'delete',
-			'update',
-			'insert',
-		);
-
-		$wpdb = $this->getMockBuilder( 'wpdb' )->disableOriginalConstructor()->setMethods( $methods )->getMock();
-
-		$wpdb->blogid             = 1;
-		$wpdb->prefix             = 'wp_';
-		$wpdb->posts              = 'posts';
-		$wpdb->postmeta           = 'post_meta';
-		$wpdb->comments           = 'comments';
-		$wpdb->commentmeta        = 'comment_meta';
-		$wpdb->terms              = 'terms';
-		$wpdb->term_taxonomy      = 'term_taxonomy';
-		$wpdb->term_relationships = 'term_relationships';
-
-		return $wpdb;
+		return $this->stubs->wpdb();
 	}
 
 	/**
+	 * @deprecated Use `$this->stubs->WP_Query()`
 	 * @return WP_Query|PHPUnit_Framework_MockObject_MockObject
 	 */
 	protected function get_wp_query_stub() {
-		$methods = array(
-			'is_category',
-			'set',
-			'get',
-			'is_tag',
-			'is_tax',
-			'get_queried_object_id',
-			'is_archive',
-			'is_attachment',
-			'is_page',
-			'is_singular',
-		);
-
-		return $this->getMockBuilder( 'WP_Query' )->disableOriginalConstructor()->setMethods( $methods )->getMock();
+		return $this->stubs->WP_Query();
 	}
 
 	/**
+	 * @deprecated Use `$this->stubs->WP_Filesystem_Direct()`
 	 * @return WP_Filesystem_Direct|PHPUnit_Framework_MockObject_MockObject
 	 */
 	function get_wp_filesystem_direct_stub() {
-		$methods = array( 'exists', 'is_readable', 'get_contents_array' );
-
-		return $this->getMockBuilder( 'WP_Filesystem_Direct' )->disableOriginalConstructor()->setMethods( $methods )->getMock();
+		return $this->stubs->WP_Filesystem_Direct();
 	}
 
+	/**
+	 * @deprecated Use `$this->stubs->WP_Theme()`
+	 * @return WP_Theme|PHPUnit_Framework_MockObject_MockObject
+	 */
 	function get_wp_theme_stub() {
-		$methods = array(
-			'get',
-			'exists',
-			'parent',
-			'display',
-			'get_stylesheet',
-			'get_template',
-			'get_stylesheet_directory',
-			'get_template_directory',
-			'get_stylesheet_directory_uri',
-			'get_template_directory_uri',
-			'get_theme_root',
-			'get_theme_root_uri',
-			'get_screenshot',
-			'get_files',
-			'get_post_templates',
-			'get_page_templates',
-			'load_textdomain',
-			'is_allowed',
-			'get_core_default_theme',
-			'get_allowed',
-			'get_allowed_on_network',
-			'get_allowed_on_site',
-			'network_enable_theme',
-			'network_disable_theme',
-			'sort_by_name',
-		);
+		return $this->stubs->WP_Theme();
+	}
 
-		return $this->getMockBuilder( 'WP_Theme' )->setMethods( $methods )->getMock();
+	/**
+	 * @deprecated Use `$this->stubs->WP_Widget()`
+	 * @return WP_Widget|PHPUnit_Framework_MockObject_MockObject
+	 */
+	function get_wp_widget_stub() {
+		return $this->stubs->WP_Widget();
 	}
 }
 
