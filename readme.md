@@ -51,16 +51,16 @@ To mock `add_query_arg` yo call `$this->get_mocked_wp_core_functions()->function
 So, if you call `$this->get_mocked_wp_core_functions()->post()` to mock `wp_insert_post`, you automatically call `$this->get_mocked_wp_core_functions()->post()`, so to get all the meta related functions mocked as well.  
 Finally, there is a "mock all" method you could use (though is discouraged) with `$this->mock_all_core_functions()`.
 
-### Stub WP common clases
+### Stub WP common classes
 `\OTGS_TestCase` provides a helpful way to quickly get a stub of some of the most commonly used classes in WordPress.
 
-By calling `\OTGS_TestCase->get_wpdb_stub()` you will get a stub you can pass as a dependency of the classes you are testing.
+By calling `$this->stubs->wpdb()` you will get a stub you can pass as a dependency of the classes you are testing.
 If you need to control the behavior of this stub, you just use the standard PHPUnit mock helpers.
 
 E.g. 1:  
 
 ```php
-$wpdb = $this->get_wpdb_stub();  
+$wpdb = $this->stubs->wpdb();  
 $wpdb->method( 'get_var' )->willReturn( 1 );
 ```
 E.g. 2:
@@ -70,16 +70,23 @@ $results = array(
 	array( 'translation_id' => 1, 'element_id' => 1, 'language_code' => 'en', 'source_language_code' => null, 'trid' => 1, 'element_type' => 'post_page' ),
 	array( 'translation_id' => 2, 'element_id' => 2, 'language_code' => 'fr', 'source_language_code' => 'en', 'trid' => 1, 'element_type' => 'post_page' ),
 );
-$wpdb = $this->get_wpdb_stub();
+$wpdb = $this->this->wpdb();
 $wpdb->expects( $this->exactly( 2 ) )->method( 'get_results' )->willReturn( $results );
 ```
 
 Other stubs you can get:
 
-- `WP_Query` with `$this->get_wp_query_stub()`
-- `WP_Query` with `$this->get_wp_query_stub()`
-- `WP_Filesystem_Direct` with `$this->get_wp_filesystem_direct_stub()`
-- `WP_Theme` with `$this-get_wp_theme_stub()`
+- `WP_Widget` with `$this->stubs->WP_Widget()`
+- `WP_Theme` with `$this->stubs->WP_Theme()`
+- `WP_Filesystem_Direct` with `$this->stubs->WP_Filesystem_Direct()`
+- `WP_Query` with `$this->stubs->WP_Query()`
+
+It is important to know that, if you only need the class to be defined (e.g. hard-dependency, or sub-classing), you don't need to assig the stub to a variable: just call the method.
+
+A good example is with WordPress' widgets, where you may have your own widget which is supposed to extend `WP_Widget`.
+
+In this case, unless you want to mock some of the `WP_Widget` methods, you simply call `$this->stubs->WP_Widget()`, then write your tests.  
+The class which extends `WP_Widget` will find a definition of this class, with all the methods (doing nothing).
 
 ## Resources and dependencies
 
