@@ -110,5 +110,23 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	function get_wp_widget_stub() {
 		return $this->stubs->WP_Widget();
 	}
-}
 
+	/**
+	 * @param string $action_name
+	 * @param array  $action_args
+	 * @param int    $times
+	 */
+	function expectAction( $action_name, array $action_args = array(), $times = null ) {
+		$intercept = \Mockery::mock( 'intercept' );
+
+		if ( null !== $times ) {
+			$intercept->shouldReceive( 'intercepted' )->times( $times );
+		} else {
+			$intercept->shouldReceive( 'intercepted' )->atLeast()->once();
+		}
+
+		$action    = \WP_Mock::onAction( $action_name );
+		$responder = call_user_func_array( array( $action, 'with' ), $action_args );
+		$responder->perform( array( $intercept, 'intercepted' ) );
+	}
+}
