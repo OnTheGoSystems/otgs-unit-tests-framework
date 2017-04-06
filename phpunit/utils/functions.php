@@ -58,7 +58,8 @@ function combinations( $arrays, $i = 0 ) {
 }
 
 function rand_str( $len = 32 ) {
-	return substr( md5( uniqid( mt_rand(), true ) ), 0, $len );
+	$non_numeric_prefix = rand_long_str( 1 );
+	return $non_numeric_prefix . substr( md5( uniqid( mt_rand(), true ) ), 0, $len - 1 );
 }
 
 function rand_long_str( $length ) {
@@ -67,7 +68,7 @@ function rand_long_str( $length ) {
 
 	for ( $i = 0; $i < $length; $i ++ ) {
 		$rand = mt_rand( 0, strlen( $chars ) - 1 );
-		$string .= substr( $chars, $rand, 1 );
+		$string .= $chars[ $rand ];
 	}
 
 	return $string;
