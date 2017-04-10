@@ -15,8 +15,8 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	protected $mocked_wp_core_functions;
 
 	public static function setupBeforeClass() {
-		$_GET    = array();
-		$_POST   = array();
+		$_GET  = array();
+		$_POST = array();
 
 		static::$fm = new FactoryMuffin();
 	}
@@ -127,6 +127,26 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 
 		$action    = \WP_Mock::onAction( $action_name );
 		$responder = call_user_func_array( array( $action, 'with' ), $action_args );
+		$responder->perform( array( $intercept, 'intercepted' ) );
+	}
+
+	/**
+	 * @param string $action   The action name
+	 * @param string $callback The callback that should be registered
+	 * @param int    $priority The priority it should be registered at
+	 * @param int    $args     The number of arguments that should be allowed
+	 * @param int    $times
+	 */
+	function expectActionAdded( $action, $callback, $priority, $args = 1, $times = null ) {
+		$intercept = \Mockery::mock( 'intercept' );
+
+		if ( null !== $times ) {
+			$intercept->shouldReceive( 'intercepted' )->times( $times );
+		} else {
+			$intercept->shouldReceive( 'intercepted' )->atLeast()->once();
+		}
+		/** @var WP_Mock\HookedCallbackResponder $responder */
+		$responder = \WP_Mock::onHookAdded( $action, 'action' )->with( $callback, $priority, $args );
 		$responder->perform( array( $intercept, 'intercepted' ) );
 	}
 }
