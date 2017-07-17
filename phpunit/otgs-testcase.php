@@ -138,6 +138,21 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	 * @param int    $times
 	 */
 	function expectActionAdded( $action, $callback, $priority, $args = 1, $times = null ) {
+		$this->expectHookAdded( $action, $callback, $priority, $args, $times, 'action' );
+	}
+
+	/**
+	 * @param string $filter   The filter name
+	 * @param string $callback The callback that should be registered
+	 * @param int    $priority The priority it should be registered at
+	 * @param int    $args     The number of arguments that should be allowed
+	 * @param int    $times
+	 */
+	function expectFilterAdded( $filter, $callback, $priority, $args = 1, $times = null ) {
+		$this->expectHookAdded( $filter, $callback, $priority, $args, $times );
+	}
+
+	private function expectHookAdded( $action, $callback, $priority, $args = 1, $times = null, $type = 'filter' ) {
 		$intercept = \Mockery::mock( 'intercept' );
 
 		if ( null !== $times ) {
@@ -146,7 +161,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 			$intercept->shouldReceive( 'intercepted' )->atLeast()->once();
 		}
 		/** @var WP_Mock\HookedCallbackResponder $responder */
-		$responder = \WP_Mock::onHookAdded( $action, 'action' )->with( $callback, $priority, $args );
+		$responder = \WP_Mock::onHookAdded( $action, $type )->with( $callback, $priority, $args );
 		$responder->perform( array( $intercept, 'intercepted' ) );
 	}
 }
