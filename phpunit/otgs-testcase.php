@@ -1,5 +1,4 @@
 <?php
-use League\FactoryMuffin\FactoryMuffin;
 use tad\FunctionMocker\FunctionMocker;
 
 /**
@@ -17,12 +16,6 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	public static function setupBeforeClass() {
 		$_GET  = array();
 		$_POST = array();
-
-		static::$fm = new FactoryMuffin();
-	}
-
-	public static function tearDownAfterClass() {
-		static::$fm->deleteSaved();
 	}
 
 	function setUp() {
