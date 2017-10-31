@@ -128,6 +128,7 @@ class OTGS_Stubs {
 			'delete',
 			'update',
 			'insert',
+			'remove_placeholder_escape',
 		);
 
 		$wpdb = $this->test_case->getMockBuilder( 'wpdb' )->disableOriginalConstructor()->setMethods( $methods )->getMock();
