@@ -1,9 +1,10 @@
 <?php
+namespace OTGS\Mocks;
 
 /**
  * @author OnTheGo Systems
  */
-class OTGS_Mocked_WP_Core_Functions {
+class LegacyWPCore {
 	private   $caller;
 	protected $filter_id_count     = 0;
 	public    $data_posts          = array();
