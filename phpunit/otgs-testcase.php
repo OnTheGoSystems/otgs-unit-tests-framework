@@ -1,4 +1,5 @@
 <?php
+
 use tad\FunctionMocker\FunctionMocker;
 
 /**
@@ -9,6 +10,9 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	protected static $fm;
 	/** @var OTGS_Stubs */
 	protected $stubs;
+
+	/** @var \OTGS\PhpUnit\Mocks\Classes */
+	protected $mocked_classes;
 
 	/** @var OTGS_Mocked_WP_Core_Functions */
 	protected $mocked_wp_core_functions;
@@ -31,6 +35,14 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 		FunctionMocker::tearDown();
 		Mockery::close();
 		parent::tearDown();
+	}
+
+	protected function mockedWPClasses() {
+		if ( ! $this->mocked_classes ) {
+			$this->mocked_classes = new OTGS\PhpUnit\Mocks\Classes( $this );
+		}
+
+		return $this->mocked_classes;
 	}
 
 	/**
