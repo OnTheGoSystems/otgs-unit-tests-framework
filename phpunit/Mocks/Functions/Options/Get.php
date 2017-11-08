@@ -15,7 +15,7 @@ class Get extends FunctionBase implements Option, WithDefault {
 	public function __construct( $key ) {
 		$this->arguments['args'] = array(
 			'key'     => $key,
-			'default' => false,
+			'default' => '*',
 		);
 	}
 
