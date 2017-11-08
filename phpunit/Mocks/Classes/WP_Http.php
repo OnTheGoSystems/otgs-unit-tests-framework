@@ -34,7 +34,7 @@ class WP_Http {
 		return $this;
 	}
 
-	public function withTimes( \PHPUnit_Framework_MockObject_Matcher_InvokedCount $value ) {
+	public function expect( \PHPUnit_Framework_MockObject_Matcher_InvokedCount $value ) {
 		$this->times = $value;
 
 		return $this;
