@@ -28,7 +28,7 @@ class Set extends FunctionBase implements Transient, WithValue, WithExpiration {
 	}
 
 	public function get_function_name() {
-		return 'get_transient';
+		return 'set_transient';
 	}
 
 	public function get_arguments() {

@@ -30,4 +30,10 @@ class Get extends FunctionBase implements Transient {
 	public function get_arguments() {
 		return $this->arguments;
 	}
+
+	public function willReturn( $value ) {
+		$this->arguments['return'] = $value;
+
+		return $this;
+	}
 }
