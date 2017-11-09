@@ -40,6 +40,12 @@ class Update extends FunctionBase implements Option, WithAutoload, WithValue {
 		return $this;
 	}
 
+	public function willReturn( $value ) {
+		$this->arguments['return'] = $value;
+
+		return $this;
+	}
+
 	public function get_function_name() {
 		return 'update_option';
 	}

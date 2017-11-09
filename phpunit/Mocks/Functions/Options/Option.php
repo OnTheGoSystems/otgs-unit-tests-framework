@@ -9,4 +9,5 @@ interface Option {
 	public function __construct( $key );
 
 	public function times( $value );
+	public function willReturn( $value );
 }
