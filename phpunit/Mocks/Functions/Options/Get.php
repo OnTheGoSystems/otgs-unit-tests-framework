@@ -26,7 +26,6 @@ class Get extends FunctionBase implements Option, WithDefault {
 	}
 
 	public function withDefault( $value ) {
-		/** @noinspection AdditionOperationOnArraysInspection */
 		$this->arguments['args']['default'] = $value;
 
 		return $this;
