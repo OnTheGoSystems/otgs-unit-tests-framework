@@ -30,14 +30,12 @@ class Add extends FunctionBase implements Option, WithAutoload, WithValue {
 	}
 
 	public function withValue( $value ) {
-		/** @noinspection AdditionOperationOnArraysInspection */
 		$this->arguments['args']['value'] = $value;
 
 		return $this;
 	}
 
 	public function withAutoload( $value ) {
-		/** @noinspection AdditionOperationOnArraysInspection */
 		$this->arguments['args']['autoload'] = $value;
 
 		return $this;
