@@ -5,10 +5,9 @@
 
 namespace OTGS\PhpUnit\Mocks\Functions;
 
-use OTGS\Mocks\Functions\Transients\Add;
 use OTGS\Mocks\Functions\Transients\Delete;
 use OTGS\Mocks\Functions\Transients\Get;
-use OTGS\Mocks\Functions\Transients\Update;
+use OTGS\Mocks\Functions\Transients\Set;
 
 class Transients {
 	public function get( $key ) {
