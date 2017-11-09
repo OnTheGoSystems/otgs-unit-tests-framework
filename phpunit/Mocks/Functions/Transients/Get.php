@@ -23,17 +23,17 @@ class Get extends FunctionBase implements Transient {
 		return $this;
 	}
 
+	public function willReturn( $value ) {
+		$this->arguments['return'] = $value;
+
+		return $this;
+	}
+
 	public function get_function_name() {
 		return 'get_transient';
 	}
 
 	public function get_arguments() {
 		return $this->arguments;
-	}
-
-	public function willReturn( $value ) {
-		$this->arguments['return'] = $value;
-
-		return $this;
 	}
 }

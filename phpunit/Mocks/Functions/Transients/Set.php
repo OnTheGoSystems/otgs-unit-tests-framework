@@ -27,6 +27,12 @@ class Set extends FunctionBase implements Transient, WithValue, WithExpiration {
 		return $this;
 	}
 
+	public function willReturn( $value ) {
+		$this->arguments['return'] = $value;
+
+		return $this;
+	}
+
 	public function get_function_name() {
 		return 'set_transient';
 	}

@@ -23,6 +23,12 @@ class Delete extends FunctionBase implements Option {
 		return $this;
 	}
 
+	public function willReturn( $value ) {
+		$this->arguments['return'] = $value;
+
+		return $this;
+	}
+
 	public function get_function_name() {
 		return 'delete_option';
 	}
