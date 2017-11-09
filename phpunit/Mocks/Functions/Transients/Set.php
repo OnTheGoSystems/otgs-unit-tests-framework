@@ -17,7 +17,7 @@ class Set extends FunctionBase implements Transient, WithValue, WithExpiration {
 		$this->arguments['args'] = array(
 			'key'        => $key,
 			'value'      => '*',
-			'expiration' => 0,
+			'expiration' => '*',
 		);
 	}
 
