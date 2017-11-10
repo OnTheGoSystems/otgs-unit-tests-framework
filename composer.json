@@ -27,7 +27,7 @@
   "autoload": {
     "classmap": [
       "phpunit/otgs-testcase.php",
-      "phpunit/mocks",
+      "phpunit/Mocks",
       "phpunit/stubs"
     ]
   }
