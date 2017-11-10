@@ -5,7 +5,7 @@ use tad\FunctionMocker\FunctionMocker;
 /**
  * @author OnTheGo Systems
  */
-abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
+abstract class OTGS_TestCase extends \PHPUnit\Framework\TestCase {
 	/** @var FactoryMuffin */
 	protected static $fm;
 	/** @var OTGS_Stubs */
