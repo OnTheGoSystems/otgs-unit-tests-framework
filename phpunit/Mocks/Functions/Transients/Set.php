@@ -11,24 +11,24 @@ use OTGS\PhpUnit\Mocks\Functions\Transients\WithExpiration;
 use OTGS\PhpUnit\Mocks\Functions\Transients\WithValue;
 
 class Set extends FunctionBase implements Transient, WithValue, WithExpiration {
-	private $arguments = array();
+	private $arguments;
 
 	public function __construct( $key ) {
-		$this->arguments['args'] = array(
+		$this->arguments = array(
 			'key'        => $key,
 			'value'      => '*',
 			'expiration' => '*',
 		);
 	}
 
-	public function times( $value ) {
-		$this->arguments['times'] = $value;
+	public function withValue( $value ) {
+		$this->arguments['value'] = $value;
 
 		return $this;
 	}
 
-	public function willReturn( $value ) {
-		$this->arguments['return'] = $value;
+	public function withExpiration( $value ) {
+		$this->arguments['expiration'] = $value;
 
 		return $this;
 	}
@@ -39,17 +39,5 @@ class Set extends FunctionBase implements Transient, WithValue, WithExpiration {
 
 	public function get_arguments() {
 		return $this->arguments;
-	}
-
-	public function withValue( $value ) {
-		$this->arguments['args']['value'] = $value;
-
-		return $this;
-	}
-
-	public function withExpiration( $value ) {
-		$this->arguments['args']['expiration'] = $value;
-
-		return $this;
 	}
 }
