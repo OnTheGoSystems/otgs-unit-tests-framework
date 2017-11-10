@@ -9,24 +9,12 @@ use OTGS\PhpUnit\Mocks\Functions\FunctionBase;
 use OTGS\PhpUnit\Mocks\Functions\Transients\Transient;
 
 class Delete extends FunctionBase implements Transient {
-	private $arguments = array();
+	private $arguments;
 
 	public function __construct( $key ) {
-		$this->arguments['args'] = array(
+		$this->arguments = array(
 			'key' => $key,
 		);
-	}
-
-	public function times( $value ) {
-		$this->arguments['times'] = $value;
-
-		return $this;
-	}
-
-	public function willReturn( $value ) {
-		$this->arguments['return'] = $value;
-
-		return $this;
 	}
 
 	public function get_function_name() {

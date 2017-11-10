@@ -12,10 +12,10 @@ use OTGS\PhpUnit\Mocks\Functions\Options\WithValue;
 use WP_Mock\Functions;
 
 class Add extends FunctionBase implements Option, WithAutoload, WithValue {
-	private $arguments = array();
+	private $arguments;
 
 	public function __construct( $key ) {
-		$this->arguments['args'] = array(
+		$this->arguments = array(
 			'key'        => $key,
 			'value'      => '*',
 			'deprecated' => '',
@@ -23,26 +23,14 @@ class Add extends FunctionBase implements Option, WithAutoload, WithValue {
 		);
 	}
 
-	public function times( $value ) {
-		$this->arguments['times'] = $value;
-
-		return $this;
-	}
-
 	public function withValue( $value ) {
-		$this->arguments['args']['value'] = $value;
+		$this->arguments['value'] = $value;
 
 		return $this;
 	}
 
 	public function withAutoload( $value ) {
-		$this->arguments['args']['autoload'] = $value;
-
-		return $this;
-	}
-
-	public function willReturn( $value ) {
-		$this->arguments['return'] = $value;
+		$this->arguments['autoload'] = $value;
 
 		return $this;
 	}
