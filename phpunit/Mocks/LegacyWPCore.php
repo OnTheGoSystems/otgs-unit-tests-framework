@@ -25,9 +25,9 @@ class LegacyWPCore {
 	/**
 	 * OTGS_Mocked_WP_Core_Functions constructor.
 	 *
-	 * @param $caller
+	 * @param \OTGS_TestCase $caller
 	 */
-	public function __construct( OTGS_TestCase $caller ) {
+	public function __construct( \OTGS_TestCase $caller ) {
 		$this->caller = $caller;
 	}
 
@@ -212,11 +212,11 @@ class LegacyWPCore {
 		$that = $this;
 		\WP_Mock::wpFunction( 'get_post', array(
 			'return' => /**
-			 * @param int|array|stdClass|null $post
+			 * @param int|array|\stdClass|null $post
 			 * @param string                  $output
 			 * @param string                  $filter
 			 *
-			 * @return array|mixed|null|stdClass
+			 * @return array|mixed|null|\stdClass
 			 */
 				function ( $post = null, $output = OBJECT ) use ( $that ) {
 					if ( ! $post && array_key_exists( 'post', $GLOBALS ) ) {
@@ -229,7 +229,7 @@ class LegacyWPCore {
 					if ( is_object( $post ) && isset( $post->ID ) ) {
 						$post_id = $post->ID;
 					} elseif ( $post && is_array( $post ) ) {
-						$_post = new stdClass();
+						$_post = new \stdClass();
 						/**
 						 * @var array $post
 						 */
@@ -272,7 +272,7 @@ class LegacyWPCore {
 					$post_before = get_post( $post_ID );
 					if ( ! $post_before ) {
 						if ( $wp_error ) {
-							$error                           = new stdClass();
+							$error                           = new \stdClass();
 							$error->errors['invalid_post'][] = 'Invalid post ID.';
 
 							return $error;
@@ -282,7 +282,7 @@ class LegacyWPCore {
 					}
 				}
 
-				$_post = new stdClass();
+				$_post = new \stdClass();
 				foreach ( (array) $postarr as $key => $value ) {
 					// Add the value to the object
 					if ( in_array( $key, array( 'id', 'ID', 'post_id' ), true ) ) {
@@ -376,7 +376,7 @@ class LegacyWPCore {
 				$args['description'] = (string) $args['description'];
 
 				$new_term_id = count( $that->data_terms ) + 1;
-				$new_term             = new stdClass();
+				$new_term             = new \stdClass();
 				$new_term->term_id    = $new_term_id;
 				$new_term->name       = $args['name'];
 				$new_term->slug       = $args['slug'];
@@ -388,7 +388,7 @@ class LegacyWPCore {
 
 				$new_term_taxonomy_id = count( $that->data_term_taxonomy[ $taxonomy ] ) + 1;
 
-				$term_taxonomy              = new stdClass();
+				$term_taxonomy              = new \stdClass();
 				$term_taxonomy->term_id     = $new_term_id;
 				$term_taxonomy->taxonomy    = $taxonomy;
 				$term_taxonomy->description = $args['description'];
