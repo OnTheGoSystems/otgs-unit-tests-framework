@@ -554,7 +554,7 @@ class LegacyWPCore {
 			'return' => function ( $id, $name = '' ) use ( $that ) {
 				$that->current_user_id = $id;
 				if ( $id ) {
-					$that->current_user = new WP_User( $id, $name );
+					$that->current_user = new \WP_User( $id, $name );
 				}
 			},
 		) );
