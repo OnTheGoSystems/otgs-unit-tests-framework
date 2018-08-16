@@ -9,7 +9,7 @@ use OTGS\PhpUnit\Mocks\Classes\WP_Http\Request;
 use OTGS\PhpUnit\Mocks\Classes\WP_Http\Response;
 
 class WP_Http {
-	/** @var \PHPUnit_Framework_MockObject_MockObject|WP_Http */
+	/** @var \PHPUnit\Framework\MockObject\MockObject|WP_Http */
 	private $http;
 	private $methodName;
 	/** @var Request */
@@ -19,7 +19,7 @@ class WP_Http {
 	private $testCase;
 	private $times;
 
-	public function __construct( \PHPUnit_Framework_TestCase $testCase ) {
+	public function __construct( \PHPUnit\Framework\TestCase $testCase ) {
 		$this->testCase = $testCase;
 		$this->http     = $this->testCase->getMockBuilder( 'WP_Http' )
 		                                 ->disableOriginalConstructor()
@@ -34,7 +34,7 @@ class WP_Http {
 		return $this;
 	}
 
-	public function expect( \PHPUnit_Framework_MockObject_Matcher_InvokedCount $value ) {
+	public function expect( \PHPUnit\Framework\MockObject\Matcher\InvokedCount $value ) {
 		$this->times = $value;
 
 		return $this;

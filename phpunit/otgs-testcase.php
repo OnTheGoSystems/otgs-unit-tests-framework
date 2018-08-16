@@ -1,11 +1,11 @@
 <?php
-
+use PHPUnit\Framework\TestCase;
 use tad\FunctionMocker\FunctionMocker;
 
 /**
  * @author OnTheGo Systems
  */
-abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
+abstract class OTGS_TestCase extends TestCase {
 	/** @var FactoryMuffin */
 	protected static $fm;
 	/** @var OTGS_Stubs */
@@ -78,7 +78,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 
 	/**
 	 * @deprecated Use `$this->stubs->wpdb()`
-	 * @return wpdb|PHPUnit_Framework_MockObject_MockObject
+	 * @return wpdb|\PHPUnit\Framework\MockObject\MockObject
 	 */
 	protected function get_wpdb_stub() {
 		return $this->stubs->wpdb();
@@ -86,7 +86,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 
 	/**
 	 * @deprecated Use `$this->stubs->WP_Query()`
-	 * @return WP_Query|PHPUnit_Framework_MockObject_MockObject
+	 * @return WP_Query|\PHPUnit\Framework\MockObject\MockObject
 	 */
 	protected function get_wp_query_stub() {
 		return $this->stubs->WP_Query();
@@ -94,7 +94,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 
 	/**
 	 * @deprecated Use `$this->stubs->WP_Filesystem_Direct()`
-	 * @return WP_Filesystem_Direct|PHPUnit_Framework_MockObject_MockObject
+	 * @return WP_Filesystem_Direct|\PHPUnit\Framework\MockObject\MockObject
 	 */
 	function get_wp_filesystem_direct_stub() {
 		return $this->stubs->WP_Filesystem_Direct();
@@ -102,7 +102,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 
 	/**
 	 * @deprecated Use `$this->stubs->WP_Theme()`
-	 * @return WP_Theme|PHPUnit_Framework_MockObject_MockObject
+	 * @return WP_Theme|\PHPUnit\Framework\MockObject\MockObject
 	 */
 	function get_wp_theme_stub() {
 		return $this->stubs->WP_Theme();
@@ -110,7 +110,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 
 	/**
 	 * @deprecated Use `$this->stubs->WP_Widget()`
-	 * @return WP_Widget|PHPUnit_Framework_MockObject_MockObject
+	 * @return WP_Widget|\PHPUnit\Framework\MockObject\MockObject
 	 */
 	function get_wp_widget_stub() {
 		return $this->stubs->WP_Widget();

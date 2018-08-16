@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @author OnTheGo Systems
  */
@@ -9,15 +8,13 @@ class OTGS_Stubs {
 	/**
 	 * OTGS_Stubs constructor.
 	 *
-	 * @param PHPUnit_Framework_TestCase $test_case
+	 * @param \PHPUnit\Framework\TestCase $test_case
 	 */
-	public function __construct( PHPUnit_Framework_TestCase $test_case ) {
+	public function __construct( \PHPUnit\Framework\TestCase $test_case ) {
 		$this->test_case = $test_case;
 	}
 
 	/**
-	 * @param PHPUnit_Framework_TestCase $testCase
-	 *
 	 * @return WP_Widget|PHPUnit_Framework_MockObject_MockObject
 	 */
 	public function WP_Widget() {
@@ -43,8 +40,6 @@ class OTGS_Stubs {
 	}
 
 	/**
-	 * @param PHPUnit_Framework_TestCase $testCase
-	 *
 	 * @return WP_Theme|PHPUnit_Framework_MockObject_MockObject
 	 */
 	public function WP_Theme() {
@@ -80,8 +75,6 @@ class OTGS_Stubs {
 	}
 
 	/**
-	 * @param PHPUnit_Framework_TestCase $testCase
-	 *
 	 * @return WP_Filesystem_Direct|PHPUnit_Framework_MockObject_MockObject
 	 */
 	public function WP_Filesystem_Direct() {
@@ -91,8 +84,6 @@ class OTGS_Stubs {
 	}
 
 	/**
-	 * @param PHPUnit_Framework_TestCase $testCase
-	 *
 	 * @return WP_Query|PHPUnit_Framework_MockObject_MockObject
 	 */
 	public function WP_Query() {
@@ -113,8 +104,6 @@ class OTGS_Stubs {
 	}
 
 	/**
-	 * @param PHPUnit_Framework_TestCase $testCase
-	 *
 	 * @return wpdb|PHPUnit_Framework_MockObject_MockObject
 	 */
 	public function wpdb() {
