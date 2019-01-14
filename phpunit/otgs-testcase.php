@@ -30,6 +30,9 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	}
 
 	function tearDown() {
+		if ( array_key_exists( 'wpdb', $GLOBALS ) && $GLOBALS['wpdb']->last_error ) {
+			$this->fail();
+		}
 		unset( $this->stubs );
 		WP_Mock::tearDown();
 		FunctionMocker::tearDown();
