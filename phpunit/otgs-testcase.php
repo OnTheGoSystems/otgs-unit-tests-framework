@@ -23,8 +23,8 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	}
 
 	function setUp() {
-		parent::setUp();
 		FunctionMocker::setUp();
+		parent::setUp();
 		WP_Mock::setUp();
 		$this->stubs = new OTGS_Stubs( $this );
 	}
@@ -32,9 +32,9 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	function tearDown() {
 		unset( $this->stubs );
 		WP_Mock::tearDown();
-		FunctionMocker::tearDown();
 		Mockery::close();
 		parent::tearDown();
+		FunctionMocker::tearDown();
 	}
 
 	protected function mockedWPClasses() {
