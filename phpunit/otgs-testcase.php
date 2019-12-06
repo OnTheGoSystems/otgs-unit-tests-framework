@@ -180,7 +180,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	 *
 	 * @throws ReflectionException Reflection exception.
 	 */
-	private function get_protected_property( $object, $property_name ) {
+	protected function get_protected_property( $object, $property_name ) {
 		$reflection_class = new \ReflectionClass( $object );
 
 		$property = $reflection_class->getProperty( $property_name );
@@ -200,7 +200,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	 *
 	 * @throws ReflectionException Reflection exception.
 	 */
-	private function set_protected_property( $object, $property_name, $value ) {
+	protected function set_protected_property( $object, $property_name, $value ) {
 		$reflection_class = new \ReflectionClass( $object );
 
 		$property = $reflection_class->getProperty( $property_name );
@@ -220,7 +220,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	 *
 	 * @throws ReflectionException Reflection exception.
 	 */
-	private function set_method_accessibility( $object, $method_name, $accessible = 'true' ) {
+	protected function set_method_accessibility( $object, $method_name, $accessible = 'true' ) {
 		$reflection_class = new \ReflectionClass( $object );
 
 		$method = $reflection_class->getMethod( $method_name );
