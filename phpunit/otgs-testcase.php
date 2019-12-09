@@ -5,7 +5,7 @@ use tad\FunctionMocker\FunctionMocker;
 /**
  * @author OnTheGo Systems
  */
-abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
+abstract class OTGS_TestCase extends PHPUnit\Framework\TestCase {
 	/** @var FactoryMuffin */
 	protected static $fm;
 	/** @var OTGS_Stubs */
@@ -17,19 +17,19 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	/** @var OTGS_Mocked_WP_Core_Functions */
 	protected $mocked_wp_core_functions;
 
-	public static function setupBeforeClass() {
+	public static function setupBeforeClass(): void {
 		$_GET  = array();
 		$_POST = array();
 	}
 
-	function setUp() {
+	function setUp(): void {
 		FunctionMocker::setUp();
 		parent::setUp();
 		WP_Mock::setUp();
 		$this->stubs = new OTGS_Stubs( $this );
 	}
 
-	function tearDown() {
+	function tearDown(): void {
 		unset( $this->stubs );
 		WP_Mock::tearDown();
 		Mockery::close();
