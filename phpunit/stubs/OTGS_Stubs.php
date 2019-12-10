@@ -11,7 +11,7 @@ class OTGS_Stubs {
 	 *
 	 * @param PHPUnit_Framework_TestCase $test_case
 	 */
-	public function __construct( PHPUnit_Framework_TestCase $test_case ) {
+	public function __construct( PHPUnit\Framework\TestCase $test_case ) {
 		$this->test_case = $test_case;
 	}
 
