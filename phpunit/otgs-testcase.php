@@ -1,26 +1,27 @@
 <?php
 
+use OTGS\Mocks\LegacyWPCore;
+use OTGS\PhpUnit\Mocks\Classes;
+use League\FactoryMuffin\FactoryMuffin;
 use tad\FunctionMocker\FunctionMocker;
-
-class_alias( PHPUnit_Framework_Error_Notice::class, PHPUnit\Framework\Error\Notice::class );
-class_alias( PHPUnit_Framework_Constraint_IsIdentical::class, PHPUnit\Framework\Constraint\IsIdentical::class );
 
 /**
  * Class OTGS_TestCase
  *
- * @version 1.2.8 for phpunit-5.7
+ * @version 2.0.0 for phpunit-7.5
  * @author OnTheGo Systems
  */
 abstract class OTGS_TestCase extends PHPUnit\Framework\TestCase {
 	/** @var FactoryMuffin */
 	protected static $fm;
+
 	/** @var OTGS_Stubs */
 	protected $stubs;
 
-	/** @var \OTGS\PhpUnit\Mocks\Classes */
+	/** @var Classes */
 	protected $mocked_classes;
 
-	/** @var OTGS_Mocked_WP_Core_Functions */
+	/** @var LegacyWPCore */
 	protected $mocked_wp_core_functions;
 
 	public static function setupBeforeClass() {
@@ -29,7 +30,6 @@ abstract class OTGS_TestCase extends PHPUnit\Framework\TestCase {
 	}
 
 	public function setUp() {
-
 		FunctionMocker::setUp();
 		parent::setUp();
 		WP_Mock::setUp();
@@ -44,72 +44,6 @@ abstract class OTGS_TestCase extends PHPUnit\Framework\TestCase {
 		FunctionMocker::tearDown();
 	}
 
-	/**
-	 * -------------------------------------
-	 * Compatibility methods for phpunit-5.7.
-	 * -------------------------------------
-	 */
-
-	/**
-	 * @param mixed  $actual
-	 * @param string $message
-	 */
-	public static function assertIsInt( $actual, $message = '' ) {
-		self::assertInternalType( 'int', $actual );
-	}
-
-	/**
-	 * @param mixed  $actual
-	 * @param string $message
-	 */
-	public static function assertIsString( $actual, $message = '' ) {
-		self::assertInternalType( 'string', $actual );
-	}
-
-	/**
-	 * @param mixed  $actual
-	 * @param string $message
-	 */
-	public static function assertIsBool( $actual, $message = '' ) {
-		self::assertInternalType( 'bool', $actual );
-	}
-
-	/**
-	 * @param mixed  $actual
-	 * @param string $message
-	 */
-	public static function assertIsArray( $actual, $message = '' ) {
-		self::assertInternalType( 'array', $actual );
-	}
-
-	/**
-	 * @param string $needle
-	 * @param string $haystack
-	 * @param string $message
-	 */
-	public static function assertStringContainsString( $needle, $haystack, $message = '' ) {
-		self::assertContains( $needle, $haystack, $message );
-	}
-
-	/**
-	 * @param mixed  $expected
-	 * @param mixed  $actual
-	 * @param float  $delta
-	 * @param string $message
-	 */
-	public static function assertEqualsWithDelta( $expected, $actual, $delta, $message = '' ) {
-		self::assertEquals( $expected, $actual, $message, $delta );
-	}
-
-	/**
-	 * ---------------------------------------------
-	 * End of compatibility methods for phpunit-5.7.
-	 * ---------------------------------------------
-	 */
-
-	/**
-	 * @return \OTGS\PhpUnit\Mocks\Classes
-	 */
 	protected function mockedWPClasses() {
 		if ( ! $this->mocked_classes ) {
 			$this->mocked_classes = new OTGS\PhpUnit\Mocks\Classes( $this );
@@ -119,11 +53,11 @@ abstract class OTGS_TestCase extends PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * @return \OTGS\Mocks\LegacyWPCore
+	 * @return LegacyWPCore
 	 */
 	protected function get_mocked_wp_core_functions() {
 		if ( ! $this->mocked_wp_core_functions ) {
-			$this->mocked_wp_core_functions = new \OTGS\Mocks\LegacyWPCore( $this );
+			$this->mocked_wp_core_functions = new LegacyWPCore( $this );
 		}
 
 		return $this->mocked_wp_core_functions;
@@ -151,7 +85,7 @@ abstract class OTGS_TestCase extends PHPUnit\Framework\TestCase {
 
 	/**
 	 * @deprecated Use `$this->stubs->wpdb()`
-	 * @return wpdb|PHPUnit_Framework_MockObject_MockObject
+	 * @return wpdb|PHPUnit\Framework\MockObject\MockObject
 	 */
 	protected function get_wpdb_stub() {
 		return $this->stubs->wpdb();
@@ -159,7 +93,7 @@ abstract class OTGS_TestCase extends PHPUnit\Framework\TestCase {
 
 	/**
 	 * @deprecated Use `$this->stubs->WP_Query()`
-	 * @return WP_Query|PHPUnit_Framework_MockObject_MockObject
+	 * @return WP_Query|PHPUnit\Framework\MockObject\MockObject
 	 */
 	protected function get_wp_query_stub() {
 		return $this->stubs->WP_Query();
@@ -167,7 +101,7 @@ abstract class OTGS_TestCase extends PHPUnit\Framework\TestCase {
 
 	/**
 	 * @deprecated Use `$this->stubs->WP_Filesystem_Direct()`
-	 * @return WP_Filesystem_Direct|PHPUnit_Framework_MockObject_MockObject
+	 * @return WP_Filesystem_Direct|PHPUnit\Framework\MockObject\MockObject
 	 */
 	public function get_wp_filesystem_direct_stub() {
 		return $this->stubs->WP_Filesystem_Direct();
@@ -175,7 +109,7 @@ abstract class OTGS_TestCase extends PHPUnit\Framework\TestCase {
 
 	/**
 	 * @deprecated Use `$this->stubs->WP_Theme()`
-	 * @return WP_Theme|PHPUnit_Framework_MockObject_MockObject
+	 * @return WP_Theme|PHPUnit\Framework\MockObject\MockObject
 	 */
 	public function get_wp_theme_stub() {
 		return $this->stubs->WP_Theme();
@@ -183,7 +117,7 @@ abstract class OTGS_TestCase extends PHPUnit\Framework\TestCase {
 
 	/**
 	 * @deprecated Use `$this->stubs->WP_Widget()`
-	 * @return WP_Widget|PHPUnit_Framework_MockObject_MockObject
+	 * @return WP_Widget|PHPUnit\Framework\MockObject\MockObject
 	 */
 	public function get_wp_widget_stub() {
 		return $this->stubs->WP_Widget();
