@@ -2,7 +2,13 @@
 
 use tad\FunctionMocker\FunctionMocker;
 
+class_alias( PHPUnit_Framework_Error_Notice::class, PHPUnit\Framework\Error\Notice::class );
+class_alias( PHPUnit_Framework_Constraint_IsIdentical::class, PHPUnit\Framework\Constraint\IsIdentical::class );
+
 /**
+ * Class OTGS_TestCase
+ *
+ * @version 1.2.8 for phpunit-5.7
  * @author OnTheGo Systems
  */
 abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
@@ -22,14 +28,15 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 		$_POST = array();
 	}
 
-	function setUp() {
+	public function setUp() {
+
 		FunctionMocker::setUp();
 		parent::setUp();
 		WP_Mock::setUp();
 		$this->stubs = new OTGS_Stubs( $this );
 	}
 
-	function tearDown() {
+	public function tearDown() {
 		unset( $this->stubs );
 		WP_Mock::tearDown();
 		Mockery::close();
@@ -37,6 +44,72 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 		FunctionMocker::tearDown();
 	}
 
+	/**
+	 * -------------------------------------
+	 * Compatibility methods for phpunit-5.7.
+	 * -------------------------------------
+	 */
+
+	/**
+	 * @param mixed  $actual
+	 * @param string $message
+	 */
+	public static function assertIsInt( $actual, $message = '' ) {
+		self::assertInternalType( 'int', $actual );
+	}
+
+	/**
+	 * @param mixed  $actual
+	 * @param string $message
+	 */
+	public static function assertIsString( $actual, $message = '' ) {
+		self::assertInternalType( 'string', $actual );
+	}
+
+	/**
+	 * @param mixed  $actual
+	 * @param string $message
+	 */
+	public static function assertIsBool( $actual, $message = '' ) {
+		self::assertInternalType( 'bool', $actual );
+	}
+
+	/**
+	 * @param mixed  $actual
+	 * @param string $message
+	 */
+	public static function assertIsArray( $actual, $message = '' ) {
+		self::assertInternalType( 'array', $actual );
+	}
+
+	/**
+	 * @param string $needle
+	 * @param string $haystack
+	 * @param string $message
+	 */
+	public static function assertStringContainsString( $needle, $haystack, $message = '' ) {
+		self::assertContains( $needle, $haystack, $message );
+	}
+
+	/**
+	 * @param mixed  $expected
+	 * @param mixed  $actual
+	 * @param float  $delta
+	 * @param string $message
+	 */
+	public static function assertEqualsWithDelta( $expected, $actual, $delta, $message = '' ) {
+		self::assertEquals( $expected, $actual, $message, $delta );
+	}
+
+	/**
+	 * ---------------------------------------------
+	 * End of compatibility methods for phpunit-5.7.
+	 * ---------------------------------------------
+	 */
+
+	/**
+	 * @return \OTGS\PhpUnit\Mocks\Classes
+	 */
 	protected function mockedWPClasses() {
 		if ( ! $this->mocked_classes ) {
 			$this->mocked_classes = new OTGS\PhpUnit\Mocks\Classes( $this );
@@ -96,7 +169,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	 * @deprecated Use `$this->stubs->WP_Filesystem_Direct()`
 	 * @return WP_Filesystem_Direct|PHPUnit_Framework_MockObject_MockObject
 	 */
-	function get_wp_filesystem_direct_stub() {
+	public function get_wp_filesystem_direct_stub() {
 		return $this->stubs->WP_Filesystem_Direct();
 	}
 
@@ -104,7 +177,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	 * @deprecated Use `$this->stubs->WP_Theme()`
 	 * @return WP_Theme|PHPUnit_Framework_MockObject_MockObject
 	 */
-	function get_wp_theme_stub() {
+	public function get_wp_theme_stub() {
 		return $this->stubs->WP_Theme();
 	}
 
@@ -112,7 +185,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	 * @deprecated Use `$this->stubs->WP_Widget()`
 	 * @return WP_Widget|PHPUnit_Framework_MockObject_MockObject
 	 */
-	function get_wp_widget_stub() {
+	public function get_wp_widget_stub() {
 		return $this->stubs->WP_Widget();
 	}
 
@@ -121,7 +194,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	 * @param array  $action_args
 	 * @param int    $times
 	 */
-	function expectAction( $action_name, array $action_args = array(), $times = null ) {
+	public function expectAction( $action_name, array $action_args = array(), $times = null ) {
 		$intercept = \Mockery::mock( 'intercept' );
 
 		if ( null !== $times ) {
@@ -136,24 +209,24 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * @param string $action   The action name
-	 * @param string $callback The callback that should be registered
-	 * @param int    $priority The priority it should be registered at
-	 * @param int    $args     The number of arguments that should be allowed
-	 * @param int    $times
+	 * @param string $action   The action name.
+	 * @param string $callback The callback that should be registered.
+	 * @param int    $priority The priority it should be registered at.
+	 * @param int    $args     The number of arguments that should be allowed.
+	 * @param int    $times    Number of times.
 	 */
-	function expectActionAdded( $action, $callback, $priority, $args = 1, $times = null ) {
+	public function expectActionAdded( $action, $callback, $priority, $args = 1, $times = null ) {
 		$this->expectHookAdded( $action, $callback, $priority, $args, $times, 'action' );
 	}
 
 	/**
-	 * @param string $filter   The filter name
-	 * @param string $callback The callback that should be registered
-	 * @param int    $priority The priority it should be registered at
-	 * @param int    $args     The number of arguments that should be allowed
-	 * @param int    $times
+	 * @param string $filter   The filter name.
+	 * @param string $callback The callback that should be registered.
+	 * @param int    $priority The priority it should be registered at.
+	 * @param int    $args     The number of arguments that should be allowed.
+	 * @param int    $times    Number of times.
 	 */
-	function expectFilterAdded( $filter, $callback, $priority, $args = 1, $times = null ) {
+	public function expectFilterAdded( $filter, $callback, $priority, $args = 1, $times = null ) {
 		$this->expectHookAdded( $filter, $callback, $priority, $args, $times );
 	}
 
@@ -220,7 +293,7 @@ abstract class OTGS_TestCase extends PHPUnit_Framework_TestCase {
 	 *
 	 * @throws ReflectionException Reflection exception.
 	 */
-	protected function set_method_accessibility( $object, $method_name, $accessible = 'true' ) {
+	protected function set_method_accessibility( $object, $method_name, $accessible = true ) {
 		$reflection_class = new \ReflectionClass( $object );
 
 		$method = $reflection_class->getMethod( $method_name );
