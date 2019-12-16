@@ -8,7 +8,7 @@ namespace OTGS\PhpUnit\Mocks;
 class Classes {
 	private $testCase;
 
-	public function __construct( \PHPUnit_Framework_TestCase $testCase ) {
+	public function __construct( \PHPUnit\Framework\TestCase $testCase ) {
 		$this->testCase = $testCase;
 	}
 
