@@ -24,19 +24,19 @@ abstract class OTGS_TestCase extends PHPUnit\Framework\TestCase {
 	/** @var LegacyWPCore */
 	protected $mocked_wp_core_functions;
 
-	public static function setupBeforeClass(): void {
+	public static function setupBeforeClass() {
 		$_GET  = array();
 		$_POST = array();
 	}
 
-	public function setUp(): void {
+	public function setUp() {
 		FunctionMocker::setUp();
 		parent::setUp();
 		WP_Mock::setUp();
 		$this->stubs = new OTGS_Stubs( $this );
 	}
 
-	public function tearDown(): void {
+	public function tearDown() {
 		unset( $this->stubs );
 		WP_Mock::tearDown();
 		Mockery::close();
