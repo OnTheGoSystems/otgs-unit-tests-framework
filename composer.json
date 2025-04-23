@@ -17,12 +17,13 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "roave/security-advisories": "dev-master",
     "10up/wp_mock": "^0.4",
+    "dms/phpunit-arraysubset-asserts": "~0.5.0",
     "lucatume/function-mocker": "^2.0",
-    "symfony/dom-crawler": "^5.0",
+    "phpunit/phpunit": "^9.6",
+    "roave/security-advisories": "dev-master",
     "symfony/css-selector": "^5.0",
-    "phpunit/phpunit": "^9.6"
+    "symfony/dom-crawler": "^5.0"
   },
   "autoload": {
     "classmap": [
