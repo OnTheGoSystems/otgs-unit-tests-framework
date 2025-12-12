@@ -105,10 +105,12 @@ class LegacyWPCore {
 		) );
 		\WP_Mock::wpFunction( 'maybe_unserialize', array(
 			'return' => function ( $original ) {
-				$unserialized = @unserialize( $original );
-				if ( $unserialized ) {
-					return $unserialized;
-				}
+				try {
+					$unserialized = @unserialize( $original );
+					if ( $unserialized ) {
+						return $unserialized;
+					}
+				} catch ( \Throwable $e ) {}
 
 				return $original;
 			},
@@ -152,7 +154,11 @@ class LegacyWPCore {
 		) );
 		\WP_Mock::wpFunction( 'is_serialized', array(
 			'return' => function ( $data ) {
-				$array = @unserialize( $data );
+				try {
+					$array = @unserialize( $data );
+				} catch ( \Throwable $e ) {
+					return false;
+				}
 
 				return ! ( $array === false && $data !== 'b:0;' );
 			},
