@@ -34,7 +34,7 @@ class LegacyWPCore {
 	public function functions() {
 		$that = $this;
 
-		\WP_Mock::wpFunction( 'add_query_arg', array(
+		\WP_Mock::userFunction( 'add_query_arg', array(
 			'return' => function () {
 				$args = func_get_args();
 				if ( is_array( $args[0] ) ) {
@@ -103,7 +103,7 @@ class LegacyWPCore {
 				return $ret;
 			},
 		) );
-		\WP_Mock::wpFunction( 'maybe_unserialize', array(
+		\WP_Mock::userFunction( 'maybe_unserialize', array(
 			'return' => function ( $original ) {
 				try {
 					$unserialized = @unserialize( $original );
@@ -115,7 +115,7 @@ class LegacyWPCore {
 				return $original;
 			},
 		) );
-		\WP_Mock::wpFunction( 'maybe_serialize', array(
+		\WP_Mock::userFunction( 'maybe_serialize', array(
 			'return' => function ( $data ) {
 				if ( is_array( $data ) || is_object( $data ) ) {
 					return serialize( $data );
@@ -132,27 +132,27 @@ class LegacyWPCore {
 				return $data;
 			},
 		) );
-		\WP_Mock::wpFunction( 'absint', array(
+		\WP_Mock::userFunction( 'absint', array(
 			'return' => function ( $maybeint ) {
 				return abs( (int) $maybeint );
 			},
 		) );
-		\WP_Mock::wpFunction( 'is_admin', array(
+		\WP_Mock::userFunction( 'is_admin', array(
 			'return' => function () use ( $that ) {
 				return (bool) $that->is_admin;
 			},
 		) );
-		\WP_Mock::wpFunction( 'is_multisite', array(
+		\WP_Mock::userFunction( 'is_multisite', array(
 			'return' => function () use ( $that ) {
 				return (bool) $that->is_multisite;
 			},
 		) );
-		\WP_Mock::wpFunction( 'is_network_admin', array(
+		\WP_Mock::userFunction( 'is_network_admin', array(
 			'return' => function () use ( $that ) {
 				return (bool) $that->is_network_admin;
 			},
 		) );
-		\WP_Mock::wpFunction( 'is_serialized', array(
+		\WP_Mock::userFunction( 'is_serialized', array(
 			'return' => function ( $data ) {
 				try {
 					$array = @unserialize( $data );
@@ -164,18 +164,18 @@ class LegacyWPCore {
 			},
 		) );
 
-		\WP_Mock::wpFunction( 'wp_json_encode', array(
+		\WP_Mock::userFunction( 'wp_json_encode', array(
 			'return' => function ( $data, $options = 0, $depth = 512 ) {
 				return json_encode( $data, $options, $depth );
 			},
 		) );
 
-		\WP_Mock::wpFunction( 'wp_send_json', array(
+		\WP_Mock::userFunction( 'wp_send_json', array(
 			'return' => function ( $response = null ) {
 				echo wp_json_encode( $response );
 			},
 		) );
-		\WP_Mock::wpFunction( 'wp_send_json_success', array(
+		\WP_Mock::userFunction( 'wp_send_json_success', array(
 			'return' => function ( $data = null ) {
 				$response = array( 'success' => true );
 
@@ -186,7 +186,7 @@ class LegacyWPCore {
 				return $response;
 			},
 		) );
-		\WP_Mock::wpFunction( 'wp_send_json_error', array(
+		\WP_Mock::userFunction( 'wp_send_json_error', array(
 			'return' => function ( $data = null ) {
 				$response = array( 'success' => false );
 
@@ -216,7 +216,7 @@ class LegacyWPCore {
 		$this->meta();
 
 		$that = $this;
-		\WP_Mock::wpFunction( 'get_post', array(
+		\WP_Mock::userFunction( 'get_post', array(
 			'return' => /**
 			 * @param int|array|\stdClass|null $post
 			 * @param string                  $output
@@ -270,7 +270,7 @@ class LegacyWPCore {
 				},
 		) );
 
-		\WP_Mock::wpFunction( 'wp_insert_post', array(
+		\WP_Mock::userFunction( 'wp_insert_post', array(
 			'return' => function ( $postarr, $wp_error = false ) use ( $that ) {
 
 				if ( ! empty( $postarr['ID'] ) ) {
@@ -313,24 +313,24 @@ class LegacyWPCore {
 			},
 		) );
 
-		\WP_Mock::wpFunction( 'get_post_meta', array(
+		\WP_Mock::userFunction( 'get_post_meta', array(
 			'return' => function ( $post_id, $key = '', $single = false ) {
 				return get_metadata( 'post', $post_id, $key, $single );
 			},
 		) );
-		\WP_Mock::wpFunction( 'update_post_meta', array(
+		\WP_Mock::userFunction( 'update_post_meta', array(
 			'return' => function ( $post_id, $meta_key, $meta_value, $prev_value = '' ) {
 				return update_metadata( 'post', $post_id, $meta_key, $meta_value, $prev_value );
 			},
 		) );
 
-		\WP_Mock::wpFunction( 'add_post_meta', array(
+		\WP_Mock::userFunction( 'add_post_meta', array(
 			'return' => function ( $post_id, $meta_key, $meta_value ) {
 				return add_metadata( 'post', $post_id, $meta_key, $meta_value, $unique = false );
 			},
 		) );
 
-		\WP_Mock::wpFunction( 'delete_post_meta', array(
+		\WP_Mock::userFunction( 'delete_post_meta', array(
 			'return' => function ( $post_id, $meta_key, $meta_value ) {
 				return delete_metadata( 'post', $post_id, $meta_key, $meta_value );
 			},
@@ -339,7 +339,7 @@ class LegacyWPCore {
 
 	public function taxonomy() {
 		$that = $this;
-		\WP_Mock::wpFunction( 'get_term', array(
+		\WP_Mock::userFunction( 'get_term', array(
 			'return' => function ( $term, $taxonomy = '', $output = OBJECT, $filter = 'raw' ) use ( $that ) {
 				$_term_id = null;
 
@@ -371,7 +371,7 @@ class LegacyWPCore {
 			},
 		) );
 
-		\WP_Mock::wpFunction( 'wp_insert_term', array(
+		\WP_Mock::userFunction( 'wp_insert_term', array(
 			'return' => function ( $term, $taxonomy, $args = array() ) use ( $that ) {
 				$defaults = array( 'alias_of' => '', 'description' => '', 'parent' => 0, 'slug' => '', 'term_group' => null );
 
@@ -416,7 +416,7 @@ class LegacyWPCore {
 
 		$that = $this;
 
-		\WP_Mock::wpFunction( 'get_metadata', array(
+		\WP_Mock::userFunction( 'get_metadata', array(
 			'return' => function ( $meta_type, $object_id, $meta_key = '', $single = false ) use ( $that ) {
 				if ( ! $meta_type || ! is_numeric( $object_id ) ) {
 					return false;
@@ -447,7 +447,7 @@ class LegacyWPCore {
 				}
 			},
 		) );
-		\WP_Mock::wpFunction( 'update_metadata', array(
+		\WP_Mock::userFunction( 'update_metadata', array(
 			'return' => function ( $meta_type, $object_id, $meta_key, $meta_value ) use ( $that ) {
 				if ( ! $meta_type || ! $meta_key || ! is_numeric( $object_id ) ) {
 					return false;
@@ -466,7 +466,7 @@ class LegacyWPCore {
 		) );
 
 
-		\WP_Mock::wpFunction( 'add_metadata', array(
+		\WP_Mock::userFunction( 'add_metadata', array(
 			'return' => function ( $meta_type, $object_id, $meta_key, $meta_value, $unique = false ) use ( $that ) {
 				if ( ! $meta_type || ! $meta_key || ! is_numeric( $object_id ) ) {
 					return false;
@@ -489,7 +489,7 @@ class LegacyWPCore {
 			},
 		) );
 
-		\WP_Mock::wpFunction( 'delete_metadata', array(
+		\WP_Mock::userFunction( 'delete_metadata', array(
 			'return' => function ( $meta_type, $object_id, $meta_key, $meta_value ) use ( $that ) {
 				if ( ! $meta_type || ! $meta_key || ! is_numeric( $object_id ) ) {
 					return false;
@@ -511,33 +511,33 @@ class LegacyWPCore {
 	}
 
 	public function i10n() {
-		\WP_Mock::wpPassthruFunction( 'esc_html__' );
-		\WP_Mock::wpPassthruFunction( 'esc_attr__' );
-		\WP_Mock::wpPassthruFunction( 'esc_html_x' );
-		\WP_Mock::wpPassthruFunction( 'esc_attr_x' );
-		\WP_Mock::wpPassthruFunction( 'esc_html_e' );
-		\WP_Mock::wpPassthruFunction( 'esc_attr_e' );
+		\WP_Mock::passthruFunction( 'esc_html__' );
+		\WP_Mock::passthruFunction( 'esc_attr__' );
+		\WP_Mock::passthruFunction( 'esc_html_x' );
+		\WP_Mock::passthruFunction( 'esc_attr_x' );
+		\WP_Mock::passthruFunction( 'esc_html_e' );
+		\WP_Mock::passthruFunction( 'esc_attr_e' );
 
-		\WP_Mock::wpPassthruFunction( '_c' );
-		\WP_Mock::wpPassthruFunction( '__' );
-		\WP_Mock::wpPassthruFunction( '_x' );
-		\WP_Mock::wpPassthruFunction( '_n' );
+		\WP_Mock::passthruFunction( '_c' );
+		\WP_Mock::passthruFunction( '__' );
+		\WP_Mock::passthruFunction( '_x' );
+		\WP_Mock::passthruFunction( '_n' );
 	}
 
 	public function formatting() {
-		\WP_Mock::wpPassthruFunction( 'esc_attr' );
-		\WP_Mock::wpPassthruFunction( 'esc_url_raw' );
-		\WP_Mock::wpPassthruFunction( 'esc_html' );
-		\WP_Mock::wpPassthruFunction( 'esc_sql' );
-		\WP_Mock::wpPassthruFunction( 'sanitize_text_field' );
+		\WP_Mock::passthruFunction( 'esc_attr' );
+		\WP_Mock::passthruFunction( 'esc_url_raw' );
+		\WP_Mock::passthruFunction( 'esc_html' );
+		\WP_Mock::passthruFunction( 'esc_sql' );
+		\WP_Mock::passthruFunction( 'sanitize_text_field' );
 
-		\WP_Mock::wpFunction( 'trailingslashit', array(
+		\WP_Mock::userFunction( 'trailingslashit', array(
 			'return' => function ( $input ) {
 				return untrailingslashit( $input ) . '/';
 			},
 		) );
 
-		\WP_Mock::wpFunction( 'untrailingslashit', array(
+		\WP_Mock::userFunction( 'untrailingslashit', array(
 			'return' => function ( $input ) {
 				return rtrim( $input, '/\\' );
 			},
@@ -550,13 +550,13 @@ class LegacyWPCore {
 		$this->functions();
 		$this->wp_error();
 
-		\WP_Mock::wpFunction( 'get_current_user_id', array(
+		\WP_Mock::userFunction( 'get_current_user_id', array(
 			'return' => function () use ( $that ) {
 				return $that->current_user_id;
 			},
 		) );
 
-		\WP_Mock::wpFunction( 'wp_set_current_user', array(
+		\WP_Mock::userFunction( 'wp_set_current_user', array(
 			'return' => function ( $id, $name = '' ) use ( $that ) {
 				$that->current_user_id = $id;
 				if ( $id ) {
@@ -565,7 +565,7 @@ class LegacyWPCore {
 			},
 		) );
 
-		\WP_Mock::wpFunction( 'wp_get_current_user', array(
+		\WP_Mock::userFunction( 'wp_get_current_user', array(
 			'return' => function () use ( $that ) {
 				return $that->current_user;
 			},
@@ -578,7 +578,7 @@ class LegacyWPCore {
 	public function option() {
 		$that = $this;
 
-		\WP_Mock::wpFunction( 'get_option', array(
+		\WP_Mock::userFunction( 'get_option', array(
 			'return' => function ( $option, $default_value = false ) use ( $that ) {
 				if ( array_key_exists( $option, $that->data_options ) ) {
 					return $that->data_options[ $option ];
@@ -588,13 +588,13 @@ class LegacyWPCore {
 			},
 		) );
 
-		\WP_Mock::wpFunction( 'update_option', array(
+		\WP_Mock::userFunction( 'update_option', array(
 			'return' => function ( $option, $value ) use ( $that ) {
 				$that->data_options[ $option ] = $value;
 			},
 		) );
 
-		\WP_Mock::wpFunction( 'delete_option', array(
+		\WP_Mock::userFunction( 'delete_option', array(
 			'return' => function ( $option ) use ( $that ) {
 				if ( array_key_exists( $option, $that->data_options ) ) {
 					unset( $that->data_options[ $option ] );
@@ -604,7 +604,7 @@ class LegacyWPCore {
 			},
 		) );
 
-		\WP_Mock::wpFunction(
+		\WP_Mock::userFunction(
 			'set_transient',
 			array(
 				'return' => function ( $key, $value ) use ( $that ) {
@@ -613,7 +613,7 @@ class LegacyWPCore {
 			)
 		);
 
-		\WP_Mock::wpFunction(
+		\WP_Mock::userFunction(
 			'get_transient',
 			array(
 				'return' => function ( $key ) use ( $that ) {
@@ -622,7 +622,7 @@ class LegacyWPCore {
 			)
 		);
 
-		\WP_Mock::wpFunction(
+		\WP_Mock::userFunction(
 			'delete_transient',
 			array(
 				'return' => function ( $key ) use ( $that ) {
@@ -633,7 +633,7 @@ class LegacyWPCore {
 	}
 
 	public function wp_error() {
-		\WP_Mock::wpFunction( 'is_wp_error', array(
+		\WP_Mock::userFunction( 'is_wp_error', array(
 			'return' => function ( $thing ) {
 				return ( $thing instanceof WP_Error );
 			},
@@ -643,19 +643,19 @@ class LegacyWPCore {
 	public function link_template() {
 		$this->post();
 
-		\WP_Mock::wpFunction( 'plugins_url', array(
+		\WP_Mock::userFunction( 'plugins_url', array(
 			'return' => function ( $path = '' ) {
 				return $path;
 			},
 		) );
 
-		\WP_Mock::wpFunction( 'admin_url', array(
+		\WP_Mock::userFunction( 'admin_url', array(
 			'return' => function ( $path = '', $scheme = 'admin' ) {
 				return $path . '/' . $scheme;
 			},
 		) );
 
-		\WP_Mock::wpFunction( 'get_permalink', array(
+		\WP_Mock::userFunction( 'get_permalink', array(
 			'return' => function ( $id = 0 ) {
 				$post = get_post( $id );
 
@@ -665,7 +665,7 @@ class LegacyWPCore {
 	}
 
 	public function plugin() {
-		\WP_Mock::wpFunction( 'get_plugin_data', array(
+		\WP_Mock::userFunction( 'get_plugin_data', array(
 			'return' => function ( $plugin_file ) {
 				return array(
 					'Name'        => 'Plugin Name: ' . $plugin_file,
@@ -687,7 +687,7 @@ class LegacyWPCore {
 			define( 'WP_PLUGIN_URL', '' );
 		}
 
-		\WP_Mock::wpFunction(
+		\WP_Mock::userFunction(
 			'plugin_dir_url',
 			array(
 				'return' => function ( $input ) {
@@ -696,7 +696,7 @@ class LegacyWPCore {
 			)
 		);
 
-		\WP_Mock::wpFunction(
+		\WP_Mock::userFunction(
 			'plugins_url',
 			array(
 				'return' => function () {
@@ -705,7 +705,7 @@ class LegacyWPCore {
 			)
 		);
 
-		\WP_Mock::wpFunction(
+		\WP_Mock::userFunction(
 			'add_action',
 			array(
 				'return' => function ( $tag, $function_to_add, $priority = 10, $accepted_args = 1 ) {
@@ -714,7 +714,7 @@ class LegacyWPCore {
 			)
 		);
 
-		\WP_Mock::wpFunction(
+		\WP_Mock::userFunction(
 			'add_filter',
 			array(
 				'return' => function ( $tag, $function_to_add, $priority = 10, $accepted_args = 1 ) use ( $that ) {
@@ -727,7 +727,7 @@ class LegacyWPCore {
 			)
 		);
 
-		\WP_Mock::wpFunction(
+		\WP_Mock::userFunction(
 			'remove_action',
 			array(
 				'return' => function ( $tag, $function_to_remove, $priority = 10 ) {
@@ -736,7 +736,7 @@ class LegacyWPCore {
 			)
 		);
 
-		\WP_Mock::wpFunction(
+		\WP_Mock::userFunction(
 			'remove_filter',
 			array(
 				'return' => function ( $tag, $function_to_remove, $priority = 10 ) use ( $that ) {
@@ -760,7 +760,7 @@ class LegacyWPCore {
 			)
 		);
 
-		\WP_Mock::wpFunction(
+		\WP_Mock::userFunction(
 			'_wp_filter_build_unique_id',
 			array(
 				'return' => function ( $tag, $function, $priority ) use ( $that ) {
@@ -810,7 +810,7 @@ class LegacyWPCore {
 	public function theme() {
 		$caller = $this->caller;
 
-		\WP_Mock::wpFunction( 'wp_get_theme', array(
+		\WP_Mock::userFunction( 'wp_get_theme', array(
 			'return' => function ( $plugin_file ) use ( $caller ) {
 				$wp_theme = $caller->get_wp_theme_stub();
 				$wp_theme->method( 'get' )->with( 'Name' )->willReturn( $plugin_file );
@@ -821,7 +821,7 @@ class LegacyWPCore {
 	}
 
 	public function query() {
-		\WP_Mock::wpFunction( 'is_attachment', array(
+		\WP_Mock::userFunction( 'is_attachment', array(
 			'return' => function() {
 				return isset( $_SERVER['is_attachment'] ) ? (bool) $_SERVER['is_attachment'] : false;
 			},
@@ -830,7 +830,7 @@ class LegacyWPCore {
 
 	public function shortcodes() {
 		$that = $this;
-		\WP_Mock::wpFunction( 'add_shortcode', array(
+		\WP_Mock::userFunction( 'add_shortcode', array(
 			'return' => function ( $tag, $function ) use ( $that ) {
 				$that->shortcode_tags[ $tag ] = $function;
 			},
@@ -838,13 +838,13 @@ class LegacyWPCore {
 	}
 
 	public function pluggable() {
-		\WP_Mock::wpFunction( 'wp_create_nonce', array(
+		\WP_Mock::userFunction( 'wp_create_nonce', array(
 			'return' => function ( $action ) {
 				return md5( 'nonce' . $action );
 			},
 		) );
 
-		\WP_Mock::wpFunction( 'wp_verify_nonce', array(
+		\WP_Mock::userFunction( 'wp_verify_nonce', array(
 			'return' => function ( $nonce, $action ) {
 				return $nonce === wp_create_nonce( $action );
 			},
