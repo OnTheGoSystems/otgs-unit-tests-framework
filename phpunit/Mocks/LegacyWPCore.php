@@ -635,7 +635,8 @@ class LegacyWPCore {
 	public function wp_error() {
 		\WP_Mock::wpFunction( 'is_wp_error', array(
 			'return' => function ( $thing ) {
-				return ( $thing instanceof WP_Error );
+				// WordPress's own \WP_Error, and this namespace's WP_Error for the suites that define one.
+				return ( $thing instanceof \WP_Error || $thing instanceof WP_Error );
 			},
 		) );
 	}
