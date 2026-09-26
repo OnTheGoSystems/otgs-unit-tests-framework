@@ -101,3 +101,7 @@ Below are some resources on writing unit tests which lead to the creation of thi
 * The DomCrawler Component: http://symfony.com/doc/current/components/dom_crawler.html
 * The CssSelector Component: http://symfony.com/doc/current/components/css_selector.html
 * php-loremipsum: https://github.com/joshtronic/php-loremipsum
+
+## Testing the framework itself
+
+Run `composer install`, then `vendor/bin/phpunit` from the repository root. The configuration is `phpunit.xml.dist`, and the tests are in `tests/phpunit/tests`.
